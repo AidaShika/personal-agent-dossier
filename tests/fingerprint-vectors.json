@@ -1,0 +1,61 @@
+{
+ "algorithm": "sha1(utf8(strip(name)+'|'+strip(title)+'|'+strip(role)))[:12], CRLF->LF, strip = remove leading/trailing characters with the Unicode White_Space property (includes U+3000 full-width space and U+00A0), not only ASCII",
+ "vectors": [
+  {
+   "name": "Demo",
+   "title": "",
+   "role": "a",
+   "note": "empty title",
+   "fingerprint": "cf8f06917687"
+  },
+  {
+   "name": "Demo",
+   "title": "测试",
+   "role": "只做一件事。",
+   "note": "CJK",
+   "fingerprint": "9efea759126f"
+  },
+  {
+   "name": "Demo",
+   "title": "测试",
+   "role": "只做一件事。\n",
+   "note": "trailing newline must not change the result",
+   "fingerprint": "9efea759126f"
+  },
+  {
+   "name": "Demo",
+   "title": "测试",
+   "role": "  只做一件事。  ",
+   "note": "surrounding spaces stripped",
+   "fingerprint": "9efea759126f"
+  },
+  {
+   "name": "Demo",
+   "title": "测试",
+   "role": "第一行\r\n第二行",
+   "note": "CRLF becomes LF",
+   "fingerprint": "14335faa7d7d"
+  },
+  {
+   "name": "Demo",
+   "title": "测试",
+   "role": "第一行\n第二行",
+   "note": "same as the CRLF case",
+   "fingerprint": "14335faa7d7d"
+  },
+  {
+   "name": "Demo",
+   "title": "测试",
+   "role": "　只做一件事。　",
+   "note": "full-width space U+3000 is stripped",
+   "fingerprint": "9efea759126f"
+  },
+  {
+   "name": "Demo",
+   "title": "测试",
+   "role": " 只做一件事。 ",
+   "note": "no-break space U+00A0 is stripped",
+   "fingerprint": "9efea759126f"
+  }
+ ]
+}
