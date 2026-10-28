@@ -45,7 +45,7 @@
 
 第 1 步的「去掉首尾空白」是为了避免不同 YAML 写法（`|` 与 `|-`）造成末尾换行不同而误报。`tests/fingerprint-vectors.json` 给出了标准答案，任何实现都应先跑 `tests/check_vectors.py` 通过后再用。
 
-注意：Grok Bot 的 Notion 名册里有一列「内容指纹」，那是名册自己的指纹（用带标签的完整名字和 description 算，用来发现漂移），不等于档案里的 `fingerprint`，两者不要互相比较。
+说明：Grok Bot 的 Notion 名册里的「内容指纹」列用的就是本节的算法，和档案里的 `fingerprint` 是同一个值，可以直接比较，用来发现漂移。
 
 ## 3. routines 条目
 
