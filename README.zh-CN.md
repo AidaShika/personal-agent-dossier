@@ -72,6 +72,7 @@ python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # 生�
 |---|---|---|---|
 | Grok Bot | L2 | 批量导出器、空跑导入器 | 格式的发源地平台，按 agent id 同步 |
 | Muse | L1 | 导出器、空跑导入器、自导出示例 | 报告：[`adapters/muse/adapter-report.md`](adapters/muse/adapter-report.md) |
+| Hermes | L2（作用域：一份档案 = 一个 Hermes home） | 导出器、导入器（空跑 + 落地） | 由 Hermes Agent 本人按适配器指南写成；已用一份真实 Grok Bot 档案全程验证（往返指纹不变）。报告：[`adapters/hermes/adapter-report.md`](adapters/hermes/adapter-report.md) |
 
 给新平台写适配器是预期的参与方式：按 `skills/personal-agent-dossier-adapter/` 的指南做，过指纹向量、跑一致性测试，然后提 PR 把你的平台加进这张表，并附上适配器报告。
 

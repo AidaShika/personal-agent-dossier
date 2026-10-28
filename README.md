@@ -72,6 +72,7 @@ python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # rende
 |---|---|---|---|
 | Grok Bot | L2 | Batch exporter, dry-run importer | The platform the format was born on; syncs by agent id |
 | Muse | L1 | Exporter, dry-run importer, self-export example | Report: [`adapters/muse/adapter-report.md`](adapters/muse/adapter-report.md) |
+| Hermes | L2 (scoped: one dossier = one Hermes home) | Exporter, importer (dry-run + apply) | Written by Hermes Agent itself from the adapter guide; verified end-to-end on a real Grok Bot dossier (round-trip fingerprint unchanged). Report: [`adapters/hermes/adapter-report.md`](adapters/hermes/adapter-report.md) |
 
 Writing an adapter for your platform is the intended way to join: follow the guide in `skills/personal-agent-dossier-adapter/`, pass the fingerprint vectors, run the conformance test, and open a PR that adds your row here together with your adapter report.
 
