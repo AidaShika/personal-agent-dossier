@@ -176,10 +176,20 @@ def validate(data):
 
 
 # --- rendering (SPEC section 6: idempotent export) ---------------------------
+# The serialization style deliberately mirrors the existing grok-bot corpus
+# (e.g. Hatch's dossier files): role/prompt as |- block scalars, sequences
+# indented under their key, long scalars unwrapped, ISO dates bare, and the
+# field order used by those files (refs before anti_jobs). SPEC pins the
+# semantics, not the YAML style; matching the corpus keeps one repo visually
+# uniform. Parsing any of these files yields identical data either way.
 
 FIELD_ORDER = ["spec", "id", "name", "title", "group", "status", "exported_at",
-               "source", "fingerprint", "role", "anti_jobs", "routines",
-               "memory", "refs", "skills", "excluded"]
+               "source", "fingerprint", "role", "refs", "anti_jobs", "routines",
+               "memory", "skills", "excluded"]
+
+_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+_RESERVED = {"null", "true", "false", "yes", "no", "on", "off", "~"}
+_BLOCK_KEYS = {"role", "prompt"}
 
 
 def canonical(data):
@@ -205,23 +215,89 @@ def canonical(data):
     return out
 
 
+def _scalar(s):
+    """Plain YAML scalar when safe (matching the corpus), else a JSON-style
+    double-quoted string (JSON strings are valid YAML)."""
+    s = str(s)
+    if _DATE_RE.match(s):
+        return s
+    needs_quote = (
+        s == "" or s != s.strip() or s.lower() in _RESERVED
+        or ": " in s or " #" in s or " *" in s or s.endswith(":")
+        or s[0] in "!&*?|>%@`\"'#,-?:[]{}"
+        or (s[0].isdigit() and all(c in "0123456789 */(),.-" for c in s))
+        or any(ord(c) < 0x20 for c in s)
+    )
+    if needs_quote:
+        import json
+        return json.dumps(s, ensure_ascii=False)
+    return s
+
+
+def _block(lines_out, prefix, text, content_indent):
+    """Append a block scalar: `prefix: |-` then content lines indented."""
+    style = "|" if text.endswith("\n") else "|-"
+    lines_out.append(f"{prefix}: {style}")
+    body = text[:-1] if text.endswith("\n") else text
+    pad = " " * content_indent
+    for line in body.split("\n"):
+        lines_out.append(pad + line if line else "")
+
+
+def _emit_kv(lines_out, key, value, key_col):
+    """Emit one `key: value` at column key_col, corpus style."""
+    pad = " " * key_col
+    if value is None:
+        lines_out.append(f"{pad}{key}: null")
+    elif isinstance(value, list):
+        if not value:
+            lines_out.append(f"{pad}{key}: []")
+            return
+        lines_out.append(f"{pad}{key}:")
+        for item in value:
+            if isinstance(item, dict):
+                pairs = list(item.items())
+                first_k, first_v = pairs[0]
+                _emit_dash_kv(lines_out, first_k, first_v, key_col)
+                for k2, v2 in pairs[1:]:
+                    _emit_kv(lines_out, k2, v2, key_col + 4)
+            elif isinstance(item, str) and "\n" in item:
+                _block(lines_out, f"{pad}  -", item, key_col + 4)
+            else:
+                lines_out.append(f"{pad}  - {_scalar(item)}")
+    elif isinstance(value, str) and ("\n" in value or key in _BLOCK_KEYS):
+        _block(lines_out, f"{pad}{key}", value, key_col + 2)
+    else:
+        lines_out.append(f"{pad}{key}: {_scalar(value)}")
+
+
+def _emit_dash_kv(lines_out, key, value, list_col):
+    """Emit the first key of a mapping inside a sequence: `  - key: value`.
+    The dash sits at list_col, the key at list_col + 2."""
+    pad = " " * list_col
+    if isinstance(value, str) and ("\n" in value or key in _BLOCK_KEYS):
+        _block(lines_out, f"{pad}  - {key}", value, list_col + 6)
+    elif value is None:
+        lines_out.append(f"{pad}  - {key}: null")
+    else:
+        lines_out.append(f"{pad}  - {key}: {_scalar(value)}")
+
+
+def render_front_matter(data):
+    lines_out = []
+    for k, v in canonical(data).items():
+        _emit_kv(lines_out, k, v, 0)
+    return "\n".join(lines_out) + "\n"
+
+
 def render_dossier(data, body=None):
     """Render the file form: YAML front matter + human-readable body.
     The fingerprint is recomputed from content, never trusted from input."""
     data = dict(data)
     data["fingerprint"] = fingerprint(data.get("name"), data.get("title"), data.get("role"))
-    fm = yaml.safe_dump(canonical(data), allow_unicode=True, sort_keys=False,
-                        default_flow_style=False, width=10 ** 6)
-    # PyYAML quotes date-looking strings; the dossier writes ISO dates bare
-    # (they parse back to the same string via _dates_to_str on load).
-    fm = re.sub(r"^(\s*(?:exported_at|learned): )'(\d{4}-\d{2}-\d{2})'$", r"\1\2",
-                fm, flags=re.M)
+    fm = render_front_matter(data)
     if body is None:
         heading = data.get("name") or "agent"
-        lines = [f"# {heading} 交接档案", ""]
-        if data.get("title"):
-            lines += [f"职能：{data['title']}", ""]
-        lines.append("由 Muse 适配器导出（agent-dossier，平台等级 L1）。"
-                     "机器可读字段以上方 front matter 为准，正文只做人读说明。")
-        body = "\n".join(lines) + "\n"
+        body = (f"# {heading} 交接档案\n\n"
+                "这份文件由 front matter 提供机器可读的全部字段；正文只做人读说明。\n")
     return f"---\n{fm}---\n\n{body}"

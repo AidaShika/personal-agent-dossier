@@ -54,3 +54,7 @@ python3 export_muse.py --snapshot examples/kubo-snapshot.json --out examples/kub
 ## 已知降级
 
 见上表与 `adapter-report.md` 第 5 项。要点：不能按 id 同步（L1 的定义边界）；kind 与 learned 从结构化字段退化为文本标签；routine id 必然变化；`null` 在导入报告里一律写作「未导出，不等于没有」，并保留原档案副本。
+
+## 序列化风格
+
+导出器的字节形态与仓库既有 grok-bot 语料对齐（role/prompt 用 `|-` 块标量、列表缩进在键下、字段顺序与语料一致），并已按所有者指示固化为 SPEC 附录 A「标准序列化」。本适配器的渲染器即按附录 A 实现；导入器不依赖该附录，任何合法 YAML 都能读。
