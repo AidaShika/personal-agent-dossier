@@ -6,6 +6,10 @@
 
 > 플랫폼을 바꿀 때, 개인 AI 에이전트의 "일"을 그대로 가져가기 위한 형식입니다.
 
+![콜드 스타트 테스트: 새로 설치한 Hermes가 한 문장으로 다른 플랫폼의 agent를 맞이하다](docs/images/cold-start-hermes.png)
+
+*새로 설치한 Hermes에 한 문장만 주었더니, 다른 플랫폼의 agent를 스스로 가져왔고 왕복 후에도 지문은 변하지 않았다. 자세한 이야기는 아래 사례에서.*
+
 ## 해결하려는 문제
 
 AI 에이전트 플랫폼은 계속해서 새로 나오고, 사람들은 자주 플랫폼을 바꿉니다. 새 플랫폼을 써 보는 것은 쉽습니다. 어려운 것은 에이전트를 옮기는 일입니다.
@@ -93,10 +97,6 @@ python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # Notio
 ![Notion 페이지로 렌더링된 Hatch의 도시에](docs/images/hatch-notion-page.png)
 
 *Notion 페이지로 렌더링된 Hatch의 도시에(영어판). 페이지 앞부분은 도시에에서 생성된 여섯 개 섹션이고, 기계 판독용 원본은 페이지 끝에 있습니다.*
-
-![콜드 스타트 테스트: 새로 설치한 Hermes가 한 문장으로 Hatch를 맞이하다](docs/images/cold-start-hermes.png)
-
-*가져오기 쪽: 위 페이지의 Hatch 도시에를 새로 설치한 Hermes에 콜드 스타트로 가져온 기록. 지시는 한 문장뿐이었고 사전 설명 자료도 없었다. Hatch는 전용 프로필에 자리 잡았고, 왕복 후에도 지문은 변하지 않았다.*
 
 ## 상태와 로드맵
 

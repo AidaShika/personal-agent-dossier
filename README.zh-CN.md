@@ -6,6 +6,10 @@
 
 > 换平台时，把一个个人 AI agent 的「工作」完整地带走。
 
+![冷启动测试：全新 Hermes 只靠一句话接住另一个平台的 agent](docs/images/cold-start-hermes.png)
+
+*全新安装的 Hermes，只给一句话、没有任务书，就自己把另一个平台的 agent 搬了过来，往返指纹不变。完整故事见下方案例。*
+
 ## 要解决的问题
 
 AI agent 平台一个接一个地出，大家也经常换平台。试新平台很容易，难的是把 agent 搬过去。
@@ -93,10 +97,6 @@ python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # 生�
 ![Hatch 的档案渲染成的 Notion 页面](docs/images/hatch-notion-page.png)
 
 *Hatch 的档案渲染成的 Notion 页面（英文版）。页面开头是档案生成的六段人读版，机器可读的原件在页面末尾。*
-
-![冷启动测试：全新 Hermes 只靠一句话安置 Hatch](docs/images/cold-start-hermes.png)
-
-*导入侧：上面那页里的 Hatch 档案，冷启动导入一个全新的 Hermes。只给一句话、没有任务书；它把 Hatch 安置进独立 profile，往返指纹不变。*
 
 ## 状态与路线图
 

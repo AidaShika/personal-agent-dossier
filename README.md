@@ -6,6 +6,10 @@
 
 > Move a personal AI agent to a new platform without losing its job.
 
+![Cold-start test: a fresh Hermes seats another platform's agent from one sentence](docs/images/cold-start-hermes.png)
+
+*A fresh Hermes install, given one sentence and no brief, seated another platform's agent on its own, and the round-trip fingerprint came back unchanged. The full story is in the case study below.*
+
 ## The problem
 
 New AI agent platforms appear one after another, and people switch between them all the time. Trying a new platform is easy. Moving the agent is not.
@@ -93,10 +97,6 @@ This format was not designed in the abstract. It grew out of a working roster of
 ![Hatch's dossier, rendered as a Notion page](docs/images/hatch-notion-page.png)
 
 *Hatch's dossier as a Notion page (English edition). The page opens with the six human-readable sections generated from the dossier; the machine-readable original sits at the end of the page.*
-
-![Cold-start test: a fresh Hermes seats Hatch from one sentence](docs/images/cold-start-hermes.png)
-
-*The import side: the Hatch dossier from the page above, cold-started into a fresh Hermes install. One sentence of instruction and no brief; Hermes seated Hatch in a separate profile, and the round-trip fingerprint came back unchanged.*
 
 ## Status and roadmap
 
