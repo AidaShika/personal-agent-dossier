@@ -73,6 +73,7 @@ python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # Notio
 | Grok Bot | L2 | 일괄 내보내기, 가져오기(사전 실행) | 이 형식이 태어난 플랫폼. 에이전트 id로 동기화합니다 |
 | Muse | L1 | 내보내기, 가져오기(사전 실행), 자기 내보내기 예시 | 보고서: [`adapters/muse/adapter-report.md`](adapters/muse/adapter-report.md) |
 | Hermes | L2 (범위: 아카이브 1건 = Hermes home 1개) | 내보내기, 가져오기(사전 실행 + 적용) | Hermes Agent 본인이 어댑터 가이드에 따라 작성. 실제 Grok Bot 아카이브로 왕복 검증 완료(지문 불변). 보고서: [`adapters/hermes/adapter-report.md`](adapters/hermes/adapter-report.md) |
+| OpenClaw | L2 (범위: 아카이브 1건 = OpenClaw 에이전트 1개) | 내보내기, 가져오기(사전 실행 + 적용) | 실제 `openclaw onboard` 스캐폴드에 맞춰 작성. 가져온 cron 잡을 실제 게이트웨이에서 검증 완료(목록 표시, 다음 실행 시각 계산). 보고서: [`adapters/openclaw/adapter-report.md`](adapters/openclaw/adapter-report.md) |
 
 새 플랫폼용 어댑터를 작성하는 것이 의도된 참여 방식입니다. `skills/personal-agent-dossier-adapter/`의 가이드를 따라 만들고, 지문 벡터와 적합성 테스트를 통과한 뒤, 어댑터 보고서와 함께 이 표에 추가하는 PR을 보내 주세요.
 

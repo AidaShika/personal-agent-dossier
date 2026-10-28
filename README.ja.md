@@ -73,6 +73,7 @@ python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # Notio
 | Grok Bot | L2 | 一括書き出し、読み込み（予行） | この形式が生まれたプラットフォーム。agent の id で同期します |
 | Muse | L1 | 書き出し、読み込み（予行）、自己書き出しのサンプル | レポート：[`adapters/muse/adapter-report.md`](adapters/muse/adapter-report.md) |
 | Hermes | L2（範囲：アーカイブ1件 = Hermes home 1つ） | 書き出し、読み込み（予行＋適用） | Hermes Agent 本人がアダプタガイドに従って作成。実際の Grok Bot アーカイブで往復検証済み（指紋不変）。レポート：[`adapters/hermes/adapter-report.md`](adapters/hermes/adapter-report.md) |
+| OpenClaw | L2（範囲：アーカイブ1件 = OpenClaw エージェント1つ） | 書き出し、読み込み（予行＋適用） | 実際の `openclaw onboard` の雛形に合わせて作成。読み込んだ cron ジョブを実ゲートウェイで検証済み（一覧表示と次回実行時刻の計算）。レポート：[`adapters/openclaw/adapter-report.md`](adapters/openclaw/adapter-report.md) |
 
 新しいプラットフォーム向けのアダプタを書くことが、想定している参加方法です。`skills/personal-agent-dossier-adapter/` のガイドに沿って作り、指紋ベクトルと適合テストを通したら、アダプタのレポートと一緒にこの表へ追加する PR を送ってください。
 
