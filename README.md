@@ -40,7 +40,7 @@ Then follow the adapter guide in `skills/personal-agent-dossier-adapter/` and ru
 
 ## The problem
 
-New AI agent platforms appear one after another, and people switch between them all the time. Trying a new platform is easy; moving your agent onto it is the hard part.
+This format exists because I had to move. For a long time my personal agents lived on Grok Bot, and they run against my X Premium quota. As the agents and their daily routines piled up, the quota ran out. Meta's Muse had just launched in Japan, so I wanted to bring the Grok Bot agents over to it. Moving them one by one, by hand, was the tedious part, and it was the part I wanted a machine-readable handover for.
 
 A personal agent that has worked for you for months has picked up a role and explicit anti-jobs (things it must *not* do), scheduled routines, long-term memory, dependencies on other agents, and skills it relies on. All of that usually lives inside the old platform. Copy it by hand and details get lost: a routine's schedule survives but its full prompt doesn't, memory arrives as an undifferentiated blob, and nobody can tell what was lost until the agent misbehaves.
 
