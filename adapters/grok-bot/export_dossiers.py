@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Export every Grok Bot profile as an agent-dossier/0.2 file (role only).
 routines and memory are written as null = not exported (an empty list means "has none").
-Usage: export_dossiers.py [out_dir]   Read-only on the agent folders; idempotent."""
+Usage: export_dossiers.py [out_dir]   Read-only on the agent folders; idempotent.
+Exit code: 1 if any agent was BLOCKED (skipped over a sensitive pattern),
+else 0 — a skip must never look like success (SPEC 5.2)."""
 import glob, hashlib, json, os, re, sys, datetime
 
 SRC = '/home/box/agent-data/agents/*/profile.json'
@@ -40,3 +42,10 @@ for p in sorted(glob.glob(SRC)):
     report.append((aid, name, 'ok ' + fp))
 for r in report:
     print(*r, sep='\t')
+blocked = [r for r in report if r[2].startswith('BLOCKED')]
+if blocked:
+    # SPEC 5.2: skipped agents are summarized loudly and the run fails,
+    # so a skip can never pass unnoticed in automation.
+    print('BLOCKED: %d of %d agent(s) skipped: %s' % (
+        len(blocked), len(report), ', '.join(r[1] or r[0] for r in blocked)), file=sys.stderr)
+    sys.exit(1)
