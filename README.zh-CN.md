@@ -4,7 +4,7 @@
 
 [English](README.md) | **简体中文** | [日本語](README.ja.md) | [한국어](README.ko.md)
 
-> 换平台时，把一个个人 AI agent 的「工作」完整地带走。
+> 换平台时，把个人 AI agent 的「工作」完整地带走。
 
 ![冷启动测试：全新 Hermes 只靠一句话接住另一个平台的 agent](docs/images/cold-start-hermes.png)
 
