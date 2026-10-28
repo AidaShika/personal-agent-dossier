@@ -12,7 +12,7 @@ New AI agent platforms appear one after another, and people switch between them 
 
 A personal agent that has worked for you for months is more than a prompt. It has a role and explicit anti-jobs (things it must *not* do), scheduled routines, long-term memory, dependencies on other agents, and skills it relies on. All of that usually lives inside the old platform. Copy it by hand and things quietly go missing: a routine's schedule survives but its full prompt doesn't, memory arrives as an undifferentiated blob, and nobody can tell what was lost until the agent misbehaves.
 
-**personal-agent-dossier** packages that hand-over into one portable file: YAML front matter a machine can verify, plus a Markdown body a human can read. The same content can also live in a Notion page. This repository is itself packaged as a skill — an agent that clones it can read `SKILL.md`, pick a route, and export or import an agent by following the instructions.
+**personal-agent-dossier** packages that hand-over into one portable file: YAML front matter a machine can verify, plus a Markdown body a human can read. The same content can also live in a Notion page. This repository is itself packaged as a skill: an agent that clones it can read `SKILL.md`, pick a route, and export or import an agent by following the instructions.
 
 ## What a dossier contains
 
@@ -25,7 +25,7 @@ A personal agent that has worked for you for months is more than a prompt. It ha
 | Fingerprint | A 12-hex-digit SHA-1 over name + title + role, so two platforms can detect drift without diffing prose |
 | Provenance | Source platform, export date, and an `excluded` note saying what was deliberately left out |
 
-Two distinctions the format is strict about: `null` means "not exported this time", `[]` means "there are none" — and an importer must never silently drop a field. Anything the target platform cannot express goes into the import report as an itemized loss/degradation list.
+Two distinctions the format is strict about: `null` means "not exported this time", `[]` means "there are none". An importer must never silently drop a field. Anything the target platform cannot express goes into the import report as an itemized loss/degradation list.
 
 ## How this differs from nearby ideas
 
@@ -40,7 +40,7 @@ Two distinctions the format is strict about: `null` means "not exported this tim
 
 - No addresses, phone numbers, birthdays, ID numbers, passwords, tokens or API keys ever go into a dossier.
 - Exporters scan role, memory and prompts for sensitive patterns before writing; importers scan again and refuse on a hit. In batch exports a hit dossier is skipped, the rest continue, and the run exits non-zero.
-- Importers declare a capability level — L0 (text only), L1 (full text + self-verified fingerprint), L2 (sync by id) — so you know in advance what will survive the move.
+- Importers declare a capability level (L0: text only; L1: full text + self-verified fingerprint; L2: sync by id), so you know in advance what will survive the move.
 
 ## Quick start
 
@@ -57,7 +57,7 @@ python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # rende
 | Path | What it is |
 |---|---|
 | `SKILL.md` | Entry point of this repository as a skill: routes for export, import, drift check, Notion storage, adapter writing |
-| `SPEC.md` / `SPEC.en.md` | The format specification (v1.0) — Chinese original, English translation |
+| `SPEC.md` / `SPEC.en.md` | The format specification (v1.0, Chinese original with English translation) |
 | `examples/scribe.dossier.md` | A fictional, complete example with routines and all memory kinds |
 | `tests/` | Standard fingerprint test vectors and the checker every implementation must pass |
 | `tools/dossier_check.py` | Standalone validator: fields, fingerprint, sensitive-pattern scan (no adapter needed) |
@@ -79,7 +79,7 @@ Writing an adapter for your platform is the intended way to join: follow the gui
 
 This format was not designed in the abstract. It grew out of a working roster of 30+ personal bots on the Grok Bot platform, and its first cross-platform trip was a real hand-over:
 
-1. A bot's dossier was exported on the Grok Bot side and imported by Muse — first as a file, then again from a Notion page.
+1. A bot's dossier was exported on the Grok Bot side and imported by Muse, first as a file, then again from a Notion page.
 2. Muse declared L1, verified fingerprints against the standard vectors, round-tripped the example and a real 0.1 dossier, and published an itemized list of what its platform degrades.
 3. The test findings went back into the spec as clarifications: what the fingerprint does and does not cover, how to decide `refs`, granularity for composite agents, ids on platforms that have none.
 4. The Muse adapter then exported its own agent as a worked example (`adapters/muse/examples/kubo.dossier.md`).
