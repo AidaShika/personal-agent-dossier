@@ -40,9 +40,9 @@ Then follow the adapter guide in `skills/personal-agent-dossier-adapter/` and ru
 
 ## The problem
 
-This format exists because I had to move. For a long time my personal agents lived on Grok Bot, and they run against my X Premium quota. As the agents and their daily routines piled up, the quota ran out. Meta's Muse had just launched in Japan, so I wanted to bring the Grok Bot agents over to it. Moving them one by one, by hand, was the tedious part, and it was the part I wanted a machine-readable handover for.
+This format exists because I had to move. My personal agents have lived on Grok Bot since it launched a couple of months ago, and they run against my X Premium quota. As the agents and their daily routines piled up, the quota ran out. Meta's Muse had just launched in Japan, so I wanted to bring the Grok Bot agents over to it. Moving them one by one, by hand, was the tedious part, and it was the part I wanted a machine-readable handover for.
 
-A personal agent that has worked for you for months has picked up a role and explicit anti-jobs (things it must *not* do), scheduled routines, long-term memory, dependencies on other agents, and skills it relies on. All of that usually lives inside the old platform. Copy it by hand and details get lost: a routine's schedule survives but its full prompt doesn't, memory arrives as an undifferentiated blob, and nobody can tell what was lost until the agent misbehaves.
+A personal agent that has worked for you for a while has picked up a role and explicit anti-jobs (things it must *not* do), scheduled routines, long-term memory, dependencies on other agents, and skills it relies on. All of that usually lives inside the old platform. Copy it by hand and details get lost: a routine's schedule survives but its full prompt doesn't, memory arrives as an undifferentiated blob, and nobody can tell what was lost until the agent misbehaves.
 
 **personal-agent-dossier** packages that hand-over into one portable file: YAML front matter a machine can verify, plus a Markdown body a human can read. The same content can also live in a Notion page. This repository is itself packaged as a skill: an agent that clones it can read `SKILL.md`, pick a route, and export or import an agent by following the instructions.
 
