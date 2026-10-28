@@ -10,6 +10,34 @@
 
 *새로 설치한 Hermes에 한 문장만 주었더니, 다른 플랫폼의 agent를 스스로 가져왔고 왕복 후에도 지문은 변하지 않았다. 자세한 이야기는 아래 사례에서.*
 
+## 빠른 시작
+
+### 내 agent를 새 플랫폼으로 옮기기(명령줄 불필요)
+
+```bash
+git clone https://github.com/AidaShika/personal-agent-dossier
+```
+
+클론한 저장소를 skill로 내 agent에게 주거나(`SKILL.md`를 읽혀도 됩니다), 평소 말로 한 문장만 말합니다. "네 일을 전부 하나의 파일로 묶어 줘. 다른 플랫폼으로 이사 갈 거야." 새 플랫폼에서는 "이 파일이 네가 하던 일이야. 이어받아 줘." 이 파일이 이 프로젝트에서 말하는 도시에입니다. 가져오기는 바로 쓰지 않고 먼저 dry-run으로 돌기 때문에, 실제로 쓰기 전에 실행 계획과 잃게 될 것들의 목록을 볼 수 있습니다. 제대로 되면 agent가 `.dossier.md`를 돌려주고 그 지문(내용을 식별하는 짧은 코드)을 보고합니다.
+
+### 건네받은 파일 확인하기(1분)
+
+```bash
+pip install -r requirements.txt
+python3 tools/dossier_check.py path/to/any.dossier.md
+```
+
+제대로 되면 필드가 갖춰져 있고, 다시 계산한 지문이 파일에 적힌 것과 일치하며, 비밀 정보와 개인 정보 검사도 깨끗하다고 나옵니다. 아직 내 파일이 없다면 연습용으로 들어 있는 가상의 agent `examples/scribe.dossier.md`로 돌려 보세요.
+
+### 내 플랫폼으로 다리 놓기
+
+```bash
+python3 tests/check_vectors.py   # 지문 계산은 8개 테스트 케이스 모두에서 일치해야 합니다
+```
+
+그다음은 `skills/personal-agent-dossier-adapter/`의 어댑터 가이드를 따르고 `docs/conformance-test.md`의 적합성 테스트를 실행합니다. 제대로 되면 테스트 케이스가 모두 통과하고, 내 가져오기로 왕복해도 지문이 변하지 않습니다.
+
+
 ## 해결하려는 문제
 
 AI 에이전트 플랫폼은 계속해서 새로 나오고, 사람들은 자주 플랫폼을 바꿉니다. 새 플랫폼을 써 보는 것은 쉽습니다. 어려운 것은 에이전트를 옮기는 일입니다.
@@ -45,16 +73,6 @@ AI 에이전트 플랫폼은 계속해서 새로 나오고, 사람들은 자주 
 - 주소, 전화번호, 생년월일, 신분증 번호, 비밀번호, 토큰, API 키는 도시에에 넣지 않습니다.
 - 내보내기 전에 역할, 기억, 프롬프트에 민감한 패턴이 있는지 검사하고, 가져올 때 다시 검사해 일치하면 거부합니다. 일괄 내보내기에서는 일치한 도시에 하나만 건너뛰고 나머지는 계속하되, 종료 코드는 반드시 0이 아닌 값이 됩니다.
 - 가져오는 쪽은 능력 수준을 선언합니다. L0(텍스트로만 복원), L1(전문 보관과 지문 자체 검증), L2(id 기준 동기화). 옮기기 전에 무엇이 남을지 알 수 있습니다.
-
-## 빠른 시작
-
-```bash
-pip install -r requirements.txt
-python3 tests/check_vectors.py                       # 먼저 지문 알고리즘 검증
-python3 tools/dossier_check.py examples/scribe.dossier.md   # 임의의 도시에 검증
-python3 adapters/grok-bot/import_dossier.py examples/scribe.dossier.md   # 가져오기 사전 실행: 계획과 손실 목록
-python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # Notion 페이지 형식으로 변환
-```
 
 ## 저장소 구성
 

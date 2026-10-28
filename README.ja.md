@@ -10,6 +10,34 @@
 
 *まっさらな Hermes に一文だけ渡したら、別プラットフォームの agent を自分で迎え入れ、往復後もフィンガープリントは変わらなかった。詳しくは下の実例で。*
 
+## クイックスタート
+
+### 自分の agent を新しいプラットフォームへ引っ越す（コマンドライン不要）
+
+```bash
+git clone https://github.com/AidaShika/personal-agent-dossier
+```
+
+クローンしたリポジトリを skill として自分の agent に渡し（あるいは `SKILL.md` を読ませ）、そのままの言葉で一文だけ伝えます。「あなたの仕事を全部まとめて一つのファイルにして。別のプラットフォームに引っ越すから」。引っ越し先では「このファイルがあなたのこれまでの仕事だよ。引き取って」。このファイルが、本プロジェクトでいうドシエです。取り込みはいきなり書き込まず、まず dry-run で動き、実際に書き込む前に実行計画と、失われるものの一覧が見られます。うまくいくと、agent が `.dossier.md` を返し、そのフィンガープリント（中身を識別する短いコード）を報告します。
+
+### 渡されたファイルを確かめる（1分）
+
+```bash
+pip install -r requirements.txt
+python3 tools/dossier_check.py path/to/any.dossier.md
+```
+
+うまくいくと、項目がそろっていること、再計算したフィンガープリントがファイルに書かれたものと一致すること、秘密情報や個人情報のスキャンが問題なしであることが表示されます。自分のファイルがまだない場合は、同梱の `examples/scribe.dossier.md`（練習用の架空の agent）で試せます。
+
+### 自分のプラットフォームへの橋渡しを作る
+
+```bash
+python3 tests/check_vectors.py   # フィンガープリントの計算は8件のテストケースすべてで一致すること
+```
+
+あとは `skills/personal-agent-dossier-adapter/` のアダプタガイドに従い、`docs/conformance-test.md` の適合テストを実行します。うまくいくと、テストケースが全件通り、自分のインポータで往復してもフィンガープリントが変わりません。
+
+
 ## 解きたい問題
 
 AI エージェントのプラットフォームは次々に現れ、乗り換える人も少なくありません。新しいプラットフォームを試すこと自体は簡単です。難しいのは、エージェントを移すことです。
@@ -45,16 +73,6 @@ AI エージェントのプラットフォームは次々に現れ、乗り換�
 - 住所、電話番号、生年月日、証明書番号、パスワード、トークン、API キーはドシエに入れません。
 - 書き出し前に role・記憶・プロンプトへ機密パターンの検査を行い、読み込み時にも再検査して、一致したら拒否します。一括書き出しでは一致したドシエだけを省き、残りは続けますが、終了コードは必ず非ゼロにします。
 - 読み込み側は能力レベルを宣言します。L0（テキストとしてのみ復元）、L1（全文を保持し指紋を自己検証）、L2（id で同期）。移す前に何が残るか分かります。
-
-## クイックスタート
-
-```bash
-pip install -r requirements.txt
-python3 tests/check_vectors.py                       # まず指紋アルゴリズムを検証
-python3 tools/dossier_check.py examples/scribe.dossier.md   # 任意のドシエを検証
-python3 adapters/grok-bot/import_dossier.py examples/scribe.dossier.md   # 読み込みの予行（計画と欠落一覧を表示）
-python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # Notion ページ形式へ変換
-```
 
 ## リポジトリの内容
 

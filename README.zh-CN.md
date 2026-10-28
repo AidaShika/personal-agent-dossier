@@ -10,6 +10,34 @@
 
 *全新安装的 Hermes，只给一句话、没有任务书，就自己把另一个平台的 agent 搬了过来，往返指纹不变。完整故事见下方案例。*
 
+## 快速开始
+
+### 把你的 agent 搬到新平台（不用命令行）
+
+```bash
+git clone https://github.com/AidaShika/personal-agent-dossier
+```
+
+把克隆下来的仓库作为 skill 交给你的 agent（或者让它读 `SKILL.md`），然后用大白话对它说一句：「把你的工作全都打包成一个文件，我要把你搬到另一个平台了。」到了新平台就说：「这个文件里是你之前的工作，接过来吧。」这个文件就是本项目说的档案（dossier）。导入不会直接落笔，会先空跑一遍：真正写入之前，你先看到执行计划，以及有哪些东西会丢、丢在哪。跑对的样子是：agent 交回一份 `.dossier.md`，并报出它的指纹，一串标识内容的短码，你拿它对得上对不上，一眼就知道。
+
+### 验一验别人给你的文件（一分钟）
+
+```bash
+pip install -r requirements.txt
+python3 tools/dossier_check.py 路径/任意.dossier.md
+```
+
+跑对的样子是：检查器说字段齐全、它复算出的指纹和文件里写的对得上、敏感信息扫描干净。手头还没有自己的文件？先拿仓库自带的 `examples/scribe.dossier.md` 跑一遍，那是个虚构的 agent，专门用来练手。
+
+### 给你的平台搭桥
+
+```bash
+python3 tests/check_vectors.py   # 指纹算法必须在 8 条测试用例上全部对齐
+```
+
+然后按 `skills/personal-agent-dossier-adapter/` 里的适配器指南做，再跑 `docs/conformance-test.md` 里的一致性测试。跑对的样子是：用例全过，你的导入器往返一遍之后指纹不变。
+
+
 ## 要解决的问题
 
 AI agent 平台一个接一个地出，大家也经常换平台。试新平台很容易，难的是把 agent 搬过去。
@@ -45,16 +73,6 @@ AI agent 平台一个接一个地出，大家也经常换平台。试新平台�
 - 地址、电话、生日、证件号、密码、令牌、API key 永远不进档案。
 - 导出前对 role、记忆和 prompt 跑敏感信息扫描，导入时再扫一遍、命中拒绝。批量导出时命中的档案跳过、其余继续，但整轮以非零退出码结束，不许静默成功。
 - 导入方要声明能力等级（L0：只能文字还原；L1：保存全文并自验指纹；L2：按 id 同步），搬之前就知道什么能留下。
-
-## 快速开始
-
-```bash
-pip install -r requirements.txt
-python3 tests/check_vectors.py                       # 先验证指纹算法
-python3 tools/dossier_check.py examples/scribe.dossier.md   # 校验任意一份档案
-python3 adapters/grok-bot/import_dossier.py examples/scribe.dossier.md   # 空跑导入：看计划和丢失清单
-python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # 生成 Notion 页面形式
-```
 
 ## 内容
 

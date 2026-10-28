@@ -10,6 +10,34 @@
 
 *A fresh Hermes install, given one sentence and no brief, seated another platform's agent on its own, and the round-trip fingerprint came back unchanged. The full story is in the case study below.*
 
+## Quick start
+
+### Move your agent to a new platform (no command line)
+
+```bash
+git clone https://github.com/AidaShika/personal-agent-dossier
+```
+
+Hand the clone to your agent as a skill (or have it read `SKILL.md`), then say it in plain words: "Pack up everything about your job into one file. I am moving you to another platform." On the new platform: "This file is your old job. Take it over." That one file is what this project calls a dossier. Nothing is written on trust: an import first runs as a dry run, so you see the plan and the list of anything that would get lost before you approve it. You know it worked when your agent hands back a `.dossier.md` file and tells you its fingerprint, a short code that identifies the contents.
+
+### Check a file someone handed you (one minute)
+
+```bash
+pip install -r requirements.txt
+python3 tools/dossier_check.py path/to/any.dossier.md
+```
+
+You know it worked when the checker says the fields are in order, the fingerprint it recomputes matches the one written in the file, and the scan for secrets and private data comes back clean. No file of your own yet? Run it on `examples/scribe.dossier.md`, a made-up agent included for practice.
+
+### Build the bridge for your own platform
+
+```bash
+python3 tests/check_vectors.py   # the fingerprint math has to agree on all 8 test cases
+```
+
+Then follow the adapter guide in `skills/personal-agent-dossier-adapter/` and run the conformance test in `docs/conformance-test.md`. You know it worked when all test cases pass and a round trip through your importer leaves the fingerprint unchanged.
+
+
 ## The problem
 
 New AI agent platforms appear one after another, and people switch between them all the time. Trying a new platform is easy. Moving the agent is not.
@@ -45,16 +73,6 @@ Two distinctions the format is strict about: `null` means "not exported this tim
 - No addresses, phone numbers, birthdays, ID numbers, passwords, tokens or API keys ever go into a dossier.
 - Exporters scan role, memory and prompts for sensitive patterns before writing; importers scan again and refuse on a hit. In batch exports a hit dossier is skipped, the rest continue, and the run exits non-zero.
 - Importers declare a capability level (L0: text only; L1: full text + self-verified fingerprint; L2: sync by id), so you know in advance what will survive the move.
-
-## Quick start
-
-```bash
-pip install -r requirements.txt
-python3 tests/check_vectors.py                       # verify the fingerprint algorithm first
-python3 tools/dossier_check.py examples/scribe.dossier.md   # validate any dossier file
-python3 adapters/grok-bot/import_dossier.py examples/scribe.dossier.md   # dry-run import: plan + loss list
-python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # render the Notion page form
-```
 
 ## Contents
 
