@@ -9,7 +9,7 @@ try:
 except ImportError:
     sys.exit('need pyyaml: python3 -m venv v && v/bin/pip install pyyaml')
 
-SCAN = [r'[\w.+-]+@(?!\d{1,3}(?:\.\d{1,3}){3}\b)[\w-]+\.[\w.]+', r'0\d{1,3}-\d{3,4}-\d{4}', r'\b\d{16}\b', r'sk-[A-Za-z0-9]{10,}', r'ghp_\w+']
+SCAN = [r'[\w.+-]+@(?!\d{1,3}(?:\.\d{1,3}){3}\b)[\w-]+\.[\w.]+', r'0\d{1,3}-\d{3,4}-\d{4}', r'\b\d{16}\b', r'sk-[A-Za-z0-9]{10,}', r'ghp_\w+', r'(?i)(password|passwd|密码)\s*[:：=]\s*\S+']
 REQUIRED = ['spec', 'id', 'name', 'status', 'exported_at', 'source', 'fingerprint', 'role', 'routines', 'memory']
 STATUS = {'active', 'handed-over', 'retired'}
 KIND = {'rule', 'preference', 'decision', 'history'}

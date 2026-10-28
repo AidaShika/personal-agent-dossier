@@ -22,7 +22,7 @@
 | 字段 | 必填 | 类型 | 说明 |
 |---|---|---|---|
 | spec | 是 | string | 规范版本，写 `agent-dossier/0.2`（`0.1` 仍可读） |
-| id | 是 | string | 源平台里的唯一 id；同步时以它为键，不用显示名 |
+| id | 是 | string | 源平台里的唯一 id；同步时以它为键，不用显示名。平台没有原生 agent id 时，由适配器自取并在 excluded 里注明来源；id 只保证在同一 source 内唯一，跨平台配对要同时比对 source 与 id |
 | name | 是 | string | 显示名 |
 | title | 否 | string | 一句话职能标签 |
 | group | 否 | string | 分区或分组 |
@@ -34,9 +34,11 @@
 | anti_jobs | 否 | list[string] | 反职责：明确不做什么 |
 | routines | 是 | list 或 null | 定时任务，没有就写 `[]`；`null` 表示这次没有导出，见第 3 节 |
 | memory | 是 | list 或 null | 长期记忆，没有就写 `[]`；`null` 表示这次没有导出，见第 4 节 |
-| refs | 否 | list | 本 agent 依赖或会交接给的其他 agent（role、anti_jobs、memory 里点名的），每项 `{name, id}`；换平台后 id 不能解析，导入方按名字重新对应。role 里「避免职能重复」的整份名单不算（见第 7 节） |
+| refs | 否 | list | 本 agent 依赖或会交接给的其他 agent（role、anti_jobs、memory 里点名的），每项 `{name, id}`；换平台后 id 不能解析，导入方按名字重新对应。role 里「避免职能重复」的整份名单不算（见第 7 节）。refs 只登记会把活交给它、或依赖其产出的 agent；只在 role / anti_jobs / memory 里被顺带提到的不算。拿不准时问：这个 agent 不在了，我的职能会不会断？会就登记 |
 | skills | 否 | list[string] | 依赖的 skill 名称，只记名称，不复制内容 |
 | excluded | 否 | string | 导出时有意去掉的内容的一句话说明 |
+
+粒度：一份档案对应一个可独立交接的职能单元。一个平台 agent 承载多种职能（复合型平台）时，建议按职能拆成多份；拿不准就整份导出，并在 excluded 里说明粒度选择。
 
 ### 2.1 fingerprint 的精确算法
 1. `name`、`title`、`role` 各自：把 `\r\n` 换成 `\n`，再去掉首尾空白（按 Unicode 的 White_Space 属性，包含全角空格 U+3000 和 U+00A0，不只是 ASCII 空白；Python 的 `str.strip()`、JavaScript 的 `trim()` 都符合）。`title` 没有时当作空字符串。
@@ -45,7 +47,9 @@
 
 第 1 步的「去掉首尾空白」是为了避免不同 YAML 写法（`|` 与 `|-`）造成末尾换行不同而误报。`tests/fingerprint-vectors.json` 给出了标准答案，任何实现都应先跑 `tests/check_vectors.py` 通过后再用。
 
-说明：Grok Bot 的 Notion 名册里的「内容指纹」列用的就是本节的算法，和档案里的 `fingerprint` 是同一个值，可以直接比较，用来发现漂移。
+覆盖范围：指纹只覆盖 name、title、role，不覆盖 anti_jobs、routines、memory、refs、skills。因此指纹相同不等于职能完全相同；第 6 节同步时 anti_jobs 与 routines 必须另行逐项比对。指纹算法一旦改变，必须升规范版本号，登记在名册里的旧指纹随之视为过期。
+
+说明：Grok Bot 的 Notion 名册里的「内容指纹」列用的就是本节的算法，和档案里的 `fingerprint` 是同一个值，可以直接比较，用来发现漂移。登记值只在同一规范版本内可比。
 
 ## 3. routines 条目
 
@@ -67,7 +71,7 @@
 
 ## 5. 脱敏规则（导出方必须执行，导入方必须再检查一次）
 1. 地址、电话、生日、家庭成员、证件号、银行卡、账号密码、令牌、API key 不写入文件。需要提示时写 `[已存保管库]`。
-2. 导出前对 `fact` 和 `prompt` 跑一遍正则扫描：邮箱、日本电话号码、16 位卡号、`sk-` / `ghp_` 之类令牌、`password`/`密码` 后面跟的值；命中则中止导出并报告命中位置，不自动改写。
+2. 导出前对 `fact` 和 `prompt` 跑一遍正则扫描：邮箱、日本电话号码、16 位卡号、`sk-` / `ghp_` 之类令牌、`password`/`密码` 后面跟的值；命中则中止导出并报告命中位置，不自动改写。`role` 同样要扫；参考实现 `adapters/grok-bot/` 的导出器和导入器用同一组正则，密码一项为 `(?i)(password|passwd|密码)\s*[:：=]\s*\S+`。
 3. 其他 agent 的记忆不由本 agent 导出；每个 agent 只导出自己的。
 4. 正文里出现 UUID（多半是其他 agent 的 id）只给出警告，不中止；应把它们写进 `refs`，说明换平台后不可解析。
 
@@ -94,6 +98,11 @@
 - 附件和工具权限的表达方式。
 
 ## 8. 变更记录
+- v0.2 补丁（2026-10-28）：只做澄清，不加字段，不改指纹算法。
+  - 2.1：指纹只覆盖 name、title、role，同步时 anti_jobs 与 routines 另行逐项比对；改算法须升规范版本，名册登记值只在同一规范版本内可比。
+  - 2：refs 加判定句（这个 agent 不在了，我的职能会不会断）。
+  - 2：一份档案对应一个可独立交接的职能单元，复合型平台建议按职能拆分。
+  - 2：平台没有原生 id 时由适配器自取并注明来源；跨平台配对同时比对 source 与 id。
 - v0.2（补丁，2026-10-28，仓库所有者指示，随 Muse 适配器的序列化对齐工作产生）：新增附录 A「标准序列化」，钉死 front matter 的字段顺序、块标量、缩进与引号规则；导入方仍不得依赖序列化细节。
 - v0.2（补丁，来自第三方平台的第二轮测试）：refs 范围写明；strip 的空白字符集写明并加两组向量；任务书不再写死记忆条数。
 - v0.2：Notion 页面的人读段落改为由 YAML 生成，避免漂移（Notion 版测试发现）；指纹算法写死并附测试向量；新增 `refs`；`null` 与 `[]` 的导入要求；平台能力等级；正文 UUID 警告（均来自 Muse 文件版测试，2026-10-28）。

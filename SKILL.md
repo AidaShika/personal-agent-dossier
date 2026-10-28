@@ -12,7 +12,7 @@ agent-dossier 是一份平台无关的「agent 档案」格式（YAML front matt
 |---|---|
 | 导出：把我自己（或我能读到的 agent）写成档案 | 读 `SPEC.md` 第 2、5 节，参考 `adapters/grok-bot/export_dossiers.py` 的结构；没有现成适配器就走下面「为我的平台写适配器」 |
 | 导入：从档案还原一个 agent | 先用空跑导入器看计划和丢失清单（`adapters/grok-bot/import_dossier.py`，只读）；真正写入前必须得到用户确认 |
-| 检查：两份档案或档案与现状是否漂移 | 按 `SPEC.md` 2.1 节算 `fingerprint`，不同就逐句对比 `role` |
+| 检查：两份档案或档案与现状是否漂移 | 按 `SPEC.md` 2.1 节算 `fingerprint`，不同就逐句对比 `role`；相同也要另行逐项比对 `anti_jobs` 与 `routines`（指纹不覆盖它们） |
 | Notion 存储 | 用 `tools/render_notion.py` 由 YAML 生成页面正文，页面里只放一个 yaml 代码块，以 YAML 为准 |
 | 为我的平台写适配器 | 读 `skills/agent-dossier-adapter/SKILL.md`，按它的七步做并写 `adapter-report.md` |
 | 验收一个导入方 | 按 `docs/conformance-test.md` 做一遍 |

@@ -7,7 +7,7 @@ import glob, hashlib, json, os, re, sys, datetime
 SRC = '/home/box/agent-data/agents/*/profile.json'
 out = sys.argv[1] if len(sys.argv) > 1 else '/workspace/agent-dossier/out'
 os.makedirs(out, exist_ok=True)
-SCAN = [r'[\w.+-]+@(?!\d{1,3}(?:\.\d{1,3}){3}\b)[\w-]+\.[\w.]+', r'0\d{1,3}-\d{3,4}-\d{4}', r'\b\d{16}\b', r'sk-[A-Za-z0-9]{10,}', r'ghp_\w+']
+SCAN = [r'[\w.+-]+@(?!\d{1,3}(?:\.\d{1,3}){3}\b)[\w-]+\.[\w.]+', r'0\d{1,3}-\d{3,4}-\d{4}', r'\b\d{16}\b', r'sk-[A-Za-z0-9]{10,}', r'ghp_\w+', r'(?i)(password|passwd|密码)\s*[:：=]\s*\S+']
 
 def split_name(full):
     m = re.match(r'^(.*?)\s*·\s*(.+)$', full or '')
