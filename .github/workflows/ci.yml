@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Fingerprint vectors (SPEC 2.1)
+        run: python3 tests/check_vectors.py
+
+      - name: Standalone checker on the examples
+        run: >-
+          python3 tools/dossier_check.py
+          examples/scribe.dossier.md
+          adapters/muse/examples/kubo.dossier.md
+
+      - name: Grok Bot importer (dry run)
+        run: python3 adapters/grok-bot/import_dossier.py examples/scribe.dossier.md
+
+      - name: Muse importer (dry run)
+        run: python3 adapters/muse/import_dossier.py examples/scribe.dossier.md
+
+      - name: Muse round-trip smoke test
+        run: |
+          python3 adapters/muse/import_dossier.py examples/scribe.dossier.md --stage /tmp/stage >/dev/null
+          python3 adapters/muse/export_muse.py --from-staging /tmp/stage --out /tmp/rt.dossier.md --date 2026-01-01 >/dev/null
+          python3 tools/dossier_check.py /tmp/rt.dossier.md
+
+      - name: Grok Bot exporter scan behavior (SPEC 5.2)
+        run: |
+          sudo mkdir -p /home/box/agent-data/agents/goodbot /home/box/agent-data/agents/badbot
+          printf '{"name": "Good", "description": "harmless test role"}' | sudo tee /home/box/agent-data/agents/goodbot/profile.json >/dev/null
+          printf '{"name": "Bad", "description": "login first, password: abc123"}' | sudo tee /home/box/agent-data/agents/badbot/profile.json >/dev/null
+          if python3 adapters/grok-bot/export_dossiers.py /tmp/out; then
+            echo "exporter must exit non-zero when a dossier is blocked" >&2; exit 1
+          fi
+          grep -q 'spec: personal-agent-dossier/1.0' /tmp/out/good.dossier.md
+          sudo rm -rf /home/box/agent-data/agents/badbot
+          python3 adapters/grok-bot/export_dossiers.py /tmp/out2 >/dev/null

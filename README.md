@@ -1,46 +1,95 @@
 # personal-agent-dossier
 
-一份平台无关的「个人 agent 档案」格式：把一个 AI agent 的职能、反职责、定时任务、长期记忆和依赖写成一个文件，使它能在不同平台之间交接、迁移和同步。
+[![CI](https://github.com/AidaShika/personal-agent-dossier/actions/workflows/ci.yml/badge.svg)](https://github.com/AidaShika/personal-agent-dossier/actions/workflows/ci.yml)
 
-A platform-neutral file format (YAML) describing a personal AI agent's role, anti-jobs, scheduled routines, long-term memory and dependencies, so the agent can be handed over, migrated or synced across platforms. The spec is currently written in Chinese; translations are welcome.
+**English** | [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
 
-## 它解决什么
+> Move a personal AI agent to a new platform without losing its job.
 
-- 换平台或换人接手时，不用靠聊天记录猜这个 agent 原来做什么、不做什么。
-- 导入方必须逐项报告「丢失或降级」，不会悄悄丢字段。
-- 档案不含地址、电话、证件、密码等私人信息，导出和导入两端都做扫描。
+## The problem
 
-## 内容
+New AI agent platforms appear one after another, and people switch between them all the time. Trying a new platform is easy. Moving the agent is not.
 
-| 路径 | 说明 |
+A personal agent that has worked for you for months is more than a prompt. It has a role and explicit anti-jobs (things it must *not* do), scheduled routines, long-term memory, dependencies on other agents, and skills it relies on. All of that usually lives inside the old platform. Copy it by hand and things quietly go missing: a routine's schedule survives but its full prompt doesn't, memory arrives as an undifferentiated blob, and nobody can tell what was lost until the agent misbehaves.
+
+**personal-agent-dossier** packages that hand-over into one portable file: YAML front matter a machine can verify, plus a Markdown body a human can read. The same content can also live in a Notion page. This repository is itself packaged as a skill — an agent that clones it can read `SKILL.md`, pick a route, and export or import an agent by following the instructions.
+
+## What a dossier contains
+
+| Part | Contents |
 |---|---|
-| `SKILL.md` | 本仓库作为一个 skill 的入口：agent 拿到仓库先读它，按任务选路线 |
-| `SPEC.md` | 格式规范（当前 v1.0） |
-| `examples/scribe.dossier.md` | 一份虚构的完整示例（含定时任务和三类记忆） |
-| `tests/` | 指纹算法的标准向量和校验脚本，任何实现都应先通过 |
-| `tools/render_notion.py` | 把档案生成 Notion 页面正文，人读段落由 YAML 生成，不会漂移 |
-| `adapters/grok-bot/` | Grok Bot 平台的导出器和空跑导入器（只读，不会创建任何东西） |
-| `adapters/muse/` | Muse 平台的导出器和空跑导入器，声明等级 L1，含自导出示例 |
-| `skills/personal-agent-dossier-adapter/SKILL.md` | 给 agent 用的适配器编写指南（skill 格式）：把它交给目标平台上的 agent，让它自己写本平台的适配器 |
-| `docs/conformance-test.md` | 让新平台验证自己能否读懂并还原档案的测试任务 |
+| Role | The agent's job description, verbatim, plus its anti-jobs |
+| Routines | Scheduled tasks: name, schedule (with timezone), full prompt, state |
+| Memory | Long-term facts, each tagged `rule` / `preference` / `decision` / `history` |
+| Dependencies | Other agents it hands work to or relies on (`refs`), and skill names |
+| Fingerprint | A 12-hex-digit SHA-1 over name + title + role, so two platforms can detect drift without diffing prose |
+| Provenance | Source platform, export date, and an `excluded` note saying what was deliberately left out |
 
-## 快速开始
+Two distinctions the format is strict about: `null` means "not exported this time", `[]` means "there are none" — and an importer must never silently drop a field. Anything the target platform cannot express goes into the import report as an itemized loss/degradation list.
+
+## How this differs from nearby ideas
+
+| | What it does | What it does not do |
+|---|---|---|
+| A2A / Agent Cards | Runtime discovery and communication between agents | Archive a personal agent's duties and memory for migration |
+| `AGENTS.md` / `CLAUDE.md` | Project instructions for coding agents | Per-agent hand-over: routines, memory kinds, fingerprint, loss report |
+| Whole-installation export | Moves an entire agent setup, configuration and credentials included | A minimal, secret-free hand-over file that both sides scan before trusting |
+| Chat export | Saves the conversation transcript | Structured duties, schedules and memory you can rebuild an agent from |
+
+## Safety by design
+
+- No addresses, phone numbers, birthdays, ID numbers, passwords, tokens or API keys ever go into a dossier.
+- Exporters scan role, memory and prompts for sensitive patterns before writing; importers scan again and refuse on a hit. In batch exports a hit dossier is skipped, the rest continue, and the run exits non-zero.
+- Importers declare a capability level — L0 (text only), L1 (full text + self-verified fingerprint), L2 (sync by id) — so you know in advance what will survive the move.
+
+## Quick start
 
 ```bash
-python3 tests/check_vectors.py                 # 先确认指纹实现正确
-python3 -m venv .venv && .venv/bin/pip install pyyaml
-.venv/bin/python adapters/grok-bot/import_dossier.py examples/scribe.dossier.md   # 空跑导入，打印计划和丢失清单
-.venv/bin/python tools/render_notion.py examples/scribe.dossier.md > page.md      # 生成 Notion 页面正文
+pip install -r requirements.txt
+python3 tests/check_vectors.py                       # verify the fingerprint algorithm first
+python3 tools/dossier_check.py examples/scribe.dossier.md   # validate any dossier file
+python3 adapters/grok-bot/import_dossier.py examples/scribe.dossier.md   # dry-run import: plan + loss list
+python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # render the Notion page form
 ```
 
-## 存储方式
+## Contents
 
-同一份内容可以存成文件（`<slug>.dossier.md`，头部是 YAML front matter），也可以存进 Notion 页面（一个 `yaml` 代码块）。导入方两种都要能读，以 YAML 为准。
+| Path | What it is |
+|---|---|
+| `SKILL.md` | Entry point of this repository as a skill: routes for export, import, drift check, Notion storage, adapter writing |
+| `SPEC.md` / `SPEC.en.md` | The format specification (v1.0) — Chinese original, English translation |
+| `examples/scribe.dossier.md` | A fictional, complete example with routines and all memory kinds |
+| `tests/` | Standard fingerprint test vectors and the checker every implementation must pass |
+| `tools/dossier_check.py` | Standalone validator: fields, fingerprint, sensitive-pattern scan (no adapter needed) |
+| `tools/render_notion.py` | Renders a dossier into a Notion page body; human sections are generated from the YAML, so they cannot drift |
+| `adapters/` | Per-platform exporters and dry-run importers |
+| `skills/personal-agent-dossier-adapter/SKILL.md` | The adapter-writing guide: hand it to an agent on a new platform and it writes its own adapter |
+| `docs/conformance-test.md` | The conformance test an importing platform runs to prove it understood the format |
 
-## 状态
+## Adapters
 
-v1.0。已在两个平台上用文件和 Notion 两条路线各做过一次导入测试，测试发现的问题已并入规范。1.0 相对 0.2 只改了项目名与 spec 标识（原名 agent-dossier），字段与指纹算法不变，旧标识的档案仍可读。欢迎提 issue，尤其是新平台的适配和规范里「尚未定的问题」。
+| Platform | Level | Included | Notes |
+|---|---|---|---|
+| Grok Bot | L2 | Batch exporter, dry-run importer | The platform the format was born on; syncs by agent id |
+| Muse | L1 | Exporter, dry-run importer, self-export example | Report: [`adapters/muse/adapter-report.md`](adapters/muse/adapter-report.md) |
 
-## 许可
+Writing an adapter for your platform is the intended way to join: follow the guide in `skills/personal-agent-dossier-adapter/`, pass the fingerprint vectors, run the conformance test, and open a PR that adds your row here together with your adapter report.
 
-MIT，见 `LICENSE`。
+## Case study: from Grok Bot to Muse
+
+This format was not designed in the abstract. It grew out of a working roster of 30+ personal bots on the Grok Bot platform, and its first cross-platform trip was a real hand-over:
+
+1. A bot's dossier was exported on the Grok Bot side and imported by Muse — first as a file, then again from a Notion page.
+2. Muse declared L1, verified fingerprints against the standard vectors, round-tripped the example and a real 0.1 dossier, and published an itemized list of what its platform degrades.
+3. The test findings went back into the spec as clarifications: what the fingerprint does and does not cover, how to decide `refs`, granularity for composite agents, ids on platforms that have none.
+4. The Muse adapter then exported its own agent as a worked example (`adapters/muse/examples/kubo.dossier.md`).
+
+## Status and roadmap
+
+v1.0. The spec was renamed from `agent-dossier` at v1.0; importers keep accepting the legacy `agent-dossier/0.1` and `agent-dossier/0.2` identifiers, and fingerprints are unaffected.
+
+Open questions (discussion welcome): splitting rosters out of `role` into a dedicated field, memory layering and expiry, hand-over relationships between agents, and how to express attachments and tool permissions.
+
+## License
+
+MIT, see `LICENSE`.
