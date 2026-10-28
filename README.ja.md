@@ -86,6 +86,10 @@ python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # Notio
 3. テストで見つかった論点は仕様の明確化として戻されました。指紋が対象とする範囲、`refs` の判定、複合型プラットフォームでの粒度、原生 id を持たないプラットフォームの扱いです。
 4. その後、Muse のアダプタが自分自身を書き出したサンプル（`adapters/muse/examples/kubo.dossier.md`）も用意しました。
 
+![Notion ページとして描かれた Hatch のドシエ](docs/images/hatch-notion-page.png)
+
+*Notion ページとして描かれた Hatch のドシエ（英語版）。ページの冒頭はドシエから生成された6つのセクションで、機械可読な原文はページの末尾にあります。*
+
 ## 状態とロードマップ
 
 v1.0 です。v1.0 でプロジェクト名を agent-dossier から personal-agent-dossier に変更しました。読み込み側は旧標識 `agent-dossier/0.1` と `agent-dossier/0.2` を引き続き受け付け、指紋には影響しません。

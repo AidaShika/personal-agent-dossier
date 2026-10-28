@@ -86,6 +86,10 @@ This format was not designed in the abstract. It grew out of a working roster of
 3. The test findings went back into the spec as clarifications: what the fingerprint does and does not cover, how to decide `refs`, granularity for composite agents, ids on platforms that have none.
 4. The Muse adapter then exported its own agent as a worked example (`adapters/muse/examples/kubo.dossier.md`).
 
+![Hatch's dossier, rendered as a Notion page](docs/images/hatch-notion-page.png)
+
+*Hatch's dossier as a Notion page (English edition). The page opens with the six human-readable sections generated from the dossier; the machine-readable original sits at the end of the page.*
+
 ## Status and roadmap
 
 v1.0. The spec was renamed from `agent-dossier` at v1.0; importers keep accepting the legacy `agent-dossier/0.1` and `agent-dossier/0.2` identifiers, and fingerprints are unaffected.

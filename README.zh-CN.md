@@ -86,6 +86,10 @@ python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # 生�
 3. 测试发现的问题回写进规范成为澄清：指纹覆盖什么、不覆盖什么，`refs` 的判定，复合型平台的粒度，没有原生 id 的平台怎么办。
 4. Muse 适配器随后把自己导出成一份示例档案（`adapters/muse/examples/kubo.dossier.md`）。
 
+![Hatch 的档案渲染成的 Notion 页面](docs/images/hatch-notion-page.png)
+
+*Hatch 的档案渲染成的 Notion 页面（英文版）。页面开头是档案生成的六段人读版，机器可读的原件在页面末尾。*
+
 ## 状态与路线图
 
 v1.0。项目在 v1.0 时由 agent-dossier 改名为 personal-agent-dossier；导入方继续接受旧标识 `agent-dossier/0.1`、`agent-dossier/0.2`，指纹不受影响。

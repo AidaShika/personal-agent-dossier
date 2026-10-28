@@ -86,6 +86,10 @@ python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # Notio
 3. 테스트에서 나온 쟁점은 사양의 명확화로 되돌아갔습니다. 지문이 다루는 범위, `refs` 판정 기준, 복합형 플랫폼의 단위, 고유 id가 없는 플랫폼의 처리 방법입니다.
 4. 이후 Claude 어댑터가 자기 자신을 내보낸 예시(`adapters/muse/examples/kubo.dossier.md`)도 마련했습니다.
 
+![Notion 페이지로 렌더링된 Hatch의 도시에](docs/images/hatch-notion-page.png)
+
+*Notion 페이지로 렌더링된 Hatch의 도시에(영어판). 페이지 앞부분은 도시에에서 생성된 여섯 개 섹션이고, 기계 판독용 원본은 페이지 끝에 있습니다.*
+
 ## 상태와 로드맵
 
 v1.0입니다. v1.0에서 프로젝트 이름을 agent-dossier에서 personal-agent-dossier로 바꿨습니다. 가져오는 쪽은 예전 식별자 `agent-dossier/0.1`, `agent-dossier/0.2`를 계속 받아들이며, 지문에는 영향이 없습니다.
