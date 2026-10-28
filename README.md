@@ -86,9 +86,17 @@ This format was not designed in the abstract. It grew out of a working roster of
 3. The test findings went back into the spec as clarifications: what the fingerprint does and does not cover, how to decide `refs`, granularity for composite agents, ids on platforms that have none.
 4. The Muse adapter then exported its own agent as a worked example (`adapters/muse/examples/kubo.dossier.md`).
 
+![Export at roster scale: one run, every bot on the platform](docs/images/export-roster-scale.png)
+
+*The export side: the Grok Bot reference exporter walking the whole roster in one run. A bot whose dossier fails the sensitive-data scan is blocked and reported, never silently dropped.*
+
 ![Hatch's dossier, rendered as a Notion page](docs/images/hatch-notion-page.png)
 
 *Hatch's dossier as a Notion page (English edition). The page opens with the six human-readable sections generated from the dossier; the machine-readable original sits at the end of the page.*
+
+![Cold-start test: a fresh Hermes seats Hatch from one sentence](docs/images/cold-start-hermes.png)
+
+*The import side: the Hatch dossier from the page above, cold-started into a fresh Hermes install. One sentence of instruction and no brief; Hermes seated Hatch in a separate profile, and the round-trip fingerprint came back unchanged.*
 
 ## Status and roadmap
 

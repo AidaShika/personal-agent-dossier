@@ -86,9 +86,17 @@ python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # Notio
 3. 테스트에서 나온 쟁점은 사양의 명확화로 되돌아갔습니다. 지문이 다루는 범위, `refs` 판정 기준, 복합형 플랫폼의 단위, 고유 id가 없는 플랫폼의 처리 방법입니다.
 4. 이후 Claude 어댑터가 자기 자신을 내보낸 예시(`adapters/muse/examples/kubo.dossier.md`)도 마련했습니다.
 
+![명부 전체를 한 번에 내보내기](docs/images/export-roster-scale.png)
+
+*내보내기 쪽: Grok Bot 기준 내보내기가 명부 전체를 한 번에 처리하는 모습. 민감 정보 검사에 걸린 봇의 도시에는 내보내지 않고 눈에 띄게 보고한다.*
+
 ![Notion 페이지로 렌더링된 Hatch의 도시에](docs/images/hatch-notion-page.png)
 
 *Notion 페이지로 렌더링된 Hatch의 도시에(영어판). 페이지 앞부분은 도시에에서 생성된 여섯 개 섹션이고, 기계 판독용 원본은 페이지 끝에 있습니다.*
+
+![콜드 스타트 테스트: 새로 설치한 Hermes가 한 문장으로 Hatch를 맞이하다](docs/images/cold-start-hermes.png)
+
+*가져오기 쪽: 위 페이지의 Hatch 도시에를 새로 설치한 Hermes에 콜드 스타트로 가져온 기록. 지시는 한 문장뿐이었고 사전 설명 자료도 없었다. Hatch는 전용 프로필에 자리 잡았고, 왕복 후에도 지문은 변하지 않았다.*
 
 ## 상태와 로드맵
 

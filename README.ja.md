@@ -86,9 +86,17 @@ python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # Notio
 3. テストで見つかった論点は仕様の明確化として戻されました。指紋が対象とする範囲、`refs` の判定、複合型プラットフォームでの粒度、原生 id を持たないプラットフォームの扱いです。
 4. その後、Muse のアダプタが自分自身を書き出したサンプル（`adapters/muse/examples/kubo.dossier.md`）も用意しました。
 
+![名簿全体を一度にエクスポート](docs/images/export-roster-scale.png)
+
+*エクスポート側：Grok Bot のリファレンス・エクスポータが名簿全体を一度に処理する様子。機密情報スキャンに引っかかった bot のドシエは書き出されず、目立つ形で報告される。*
+
 ![Notion ページとして描かれた Hatch のドシエ](docs/images/hatch-notion-page.png)
 
 *Notion ページとして描かれた Hatch のドシエ（英語版）。ページの冒頭はドシエから生成された6つのセクションで、機械可読な原文はページの末尾にあります。*
+
+![コールドスタート試験：まっさらな Hermes が一文の指示で Hatch を迎え入れる](docs/images/cold-start-hermes.png)
+
+*インポート側：上のページの Hatch のドシエを、まっさらな Hermes にコールドスタートで取り込んだ記録。指示は一文だけで、事前の説明資料はなし。Hatch は専用プロファイルに収まり、往復後のフィンガープリントも変わらなかった。*
 
 ## 状態とロードマップ
 

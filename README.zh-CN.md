@@ -86,9 +86,17 @@ python3 tools/render_notion.py examples/scribe.dossier.md > page.md      # 生�
 3. 测试发现的问题回写进规范成为澄清：指纹覆盖什么、不覆盖什么，`refs` 的判定，复合型平台的粒度，没有原生 id 的平台怎么办。
 4. Muse 适配器随后把自己导出成一份示例档案（`adapters/muse/examples/kubo.dossier.md`）。
 
+![一次导出整个名册](docs/images/export-roster-scale.png)
+
+*导出侧：Grok Bot 参考导出器一次跑完整个名册。档案没过敏感信息扫描的 bot 会被拦下并显眼报告，绝不静默丢弃。*
+
 ![Hatch 的档案渲染成的 Notion 页面](docs/images/hatch-notion-page.png)
 
 *Hatch 的档案渲染成的 Notion 页面（英文版）。页面开头是档案生成的六段人读版，机器可读的原件在页面末尾。*
+
+![冷启动测试：全新 Hermes 只靠一句话安置 Hatch](docs/images/cold-start-hermes.png)
+
+*导入侧：上面那页里的 Hatch 档案，冷启动导入一个全新的 Hermes。只给一句话、没有任务书；它把 Hatch 安置进独立 profile，往返指纹不变。*
 
 ## 状态与路线图
 
