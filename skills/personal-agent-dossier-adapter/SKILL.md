@@ -1,6 +1,6 @@
 ---
 name: personal-agent-dossier-adapter
-description: 当你要为自己所在的平台（任意 AI agent 平台）写 personal-agent-dossier 的适配器，也就是把本平台的 agent 导出成档案、或把档案导入本平台时使用。给你规范、步骤、验收标准和报告模板。
+description: 当你要为自己所在的平台（任意 AI agent 平台）写 personal-agent-dossier 的适配器，也就是把本平台的 agent 导出成档案、或把档案导入本平台时使用。给你规范、步骤、验收标准和报告模板。用户常这样说：给新平台写个适配器；write an adapter for my platform；自分のプラットフォーム用にアダプタを書いて；내 플랫폼용 어댑터를 써줘。
 ---
 # 为你的平台写 personal-agent-dossier 适配器
 
