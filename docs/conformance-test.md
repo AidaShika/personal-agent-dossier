@@ -1,5 +1,7 @@
 # 导入方一致性测试（agent-dossier/0.2）
 
+写适配器本身见 `skills/agent-dossier-adapter/SKILL.md`。
+
 用途：让一个新平台（或一个 agent）验证自己能否读懂并还原一份档案。把本文和 `SPEC.md`、`tests/`、`examples/scribe.dossier.md` 交给被测方即可。
 
 被测方请按顺序做，把报告写成 `import-report.md`：

@@ -19,6 +19,7 @@ A platform-neutral file format (YAML) describing an AI agent's role, anti-jobs, 
 | `tests/` | 指纹算法的标准向量和校验脚本，任何实现都应先通过 |
 | `tools/render_notion.py` | 把档案生成 Notion 页面正文，人读段落由 YAML 生成，不会漂移 |
 | `adapters/grok-bot/` | Grok Bot 平台的导出器和空跑导入器（只读，不会创建任何东西） |
+| `skills/agent-dossier-adapter/SKILL.md` | 给 agent 用的适配器编写指南（skill 格式）：把它交给目标平台上的 agent，让它自己写本平台的适配器 |
 | `docs/conformance-test.md` | 让新平台验证自己能否读懂并还原档案的测试任务 |
 
 ## 快速开始
