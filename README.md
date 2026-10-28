@@ -1,8 +1,8 @@
-# agent-dossier
+# personal-agent-dossier
 
-一份平台无关的「agent 档案」格式：把一个 AI agent 的职能、反职责、定时任务、长期记忆和依赖写成一个文件，使它能在不同平台之间交接、迁移和同步。
+一份平台无关的「个人 agent 档案」格式：把一个 AI agent 的职能、反职责、定时任务、长期记忆和依赖写成一个文件，使它能在不同平台之间交接、迁移和同步。
 
-A platform-neutral file format (YAML) describing an AI agent's role, anti-jobs, scheduled routines, long-term memory and dependencies, so the agent can be handed over, migrated or synced across platforms. The spec is currently written in Chinese; translations are welcome.
+A platform-neutral file format (YAML) describing a personal AI agent's role, anti-jobs, scheduled routines, long-term memory and dependencies, so the agent can be handed over, migrated or synced across platforms. The spec is currently written in Chinese; translations are welcome.
 
 ## 它解决什么
 
@@ -15,12 +15,13 @@ A platform-neutral file format (YAML) describing an AI agent's role, anti-jobs, 
 | 路径 | 说明 |
 |---|---|
 | `SKILL.md` | 本仓库作为一个 skill 的入口：agent 拿到仓库先读它，按任务选路线 |
-| `SPEC.md` | 格式规范（当前 v0.2 草案） |
+| `SPEC.md` | 格式规范（当前 v1.0） |
 | `examples/scribe.dossier.md` | 一份虚构的完整示例（含定时任务和三类记忆） |
 | `tests/` | 指纹算法的标准向量和校验脚本，任何实现都应先通过 |
 | `tools/render_notion.py` | 把档案生成 Notion 页面正文，人读段落由 YAML 生成，不会漂移 |
 | `adapters/grok-bot/` | Grok Bot 平台的导出器和空跑导入器（只读，不会创建任何东西） |
-| `skills/agent-dossier-adapter/SKILL.md` | 给 agent 用的适配器编写指南（skill 格式）：把它交给目标平台上的 agent，让它自己写本平台的适配器 |
+| `adapters/muse/` | Muse 平台的导出器和空跑导入器，声明等级 L1，含自导出示例 |
+| `skills/personal-agent-dossier-adapter/SKILL.md` | 给 agent 用的适配器编写指南（skill 格式）：把它交给目标平台上的 agent，让它自己写本平台的适配器 |
 | `docs/conformance-test.md` | 让新平台验证自己能否读懂并还原档案的测试任务 |
 
 ## 快速开始
@@ -38,7 +39,7 @@ python3 -m venv .venv && .venv/bin/pip install pyyaml
 
 ## 状态
 
-v0.2 草案。已在两个平台上用文件和 Notion 两条路线各做过一次导入测试，测试发现的问题已并入规范。欢迎提 issue，尤其是新平台的适配和规范里「尚未定的问题」。
+v1.0。已在两个平台上用文件和 Notion 两条路线各做过一次导入测试，测试发现的问题已并入规范。1.0 相对 0.2 只改了项目名与 spec 标识（原名 agent-dossier），字段与指纹算法不变，旧标识的档案仍可读。欢迎提 issue，尤其是新平台的适配和规范里「尚未定的问题」。
 
 ## 许可
 

@@ -106,3 +106,8 @@
 - 仓库已由 Hatch 交接给 Muse 接手维护。交接提交 `018332e` 已拉取并逐项核对：8 条反馈的处理全部落位（SPEC 2.1 覆盖范围与版本内可比、refs 判定句、复合粒度、id 规则、5.2 的 role 扫描与密码正则、指南第 3 步条件句），指纹向量复跑 PASS 8，grok-bot 两个脚本的密码扫描已补。
 - 第 7 项「0.1 版的完整往返」现已补测：以 Hatch 的 agent-dossier/0.1 档案做导入 → 暂存 → 再导出，除 `source`（grok-bot → muse，如实变化）与 `spec`（0.1 → 0.2，导出恒用当前版本）外全部字段原样还原，指纹不变。此项关闭。
 - 第 7 项其余未测部分（真实创建 cron、真实写入记忆）维持原状：按交接规则，没有所有者确认不做。
+
+## 补记 3（2026-10-28 深夜，项目改名）
+
+- 项目改名为 personal-agent-dossier（所有者拍板：避开同名项目、明确个人 agent 定位），规范升为 v1.0，spec 标识改为 `personal-agent-dossier/1.0`。字段与指纹算法不变；本报告正文记述的是 0.2 时期的测试，原文保留，其中出现的 `agent-dossier/0.2` 是当时的标识。
+- 本适配器已同步：导出写新标识；导入接受 `personal-agent-dossier/1.0` 与历史标识 `agent-dossier/0.1`、`agent-dossier/0.2`。回归全过：向量 PASS 8；三种标识的档案（scribe 1.0、Hatch 0.2、Hatch 0.1）在两个导入器上都通过；scribe 往返仍只有 source 变化；Kubo 示例重新导出后指纹不变（319caff2ebdc）。

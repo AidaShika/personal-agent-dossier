@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Dry-run importer for agent-dossier/0.1 and 0.2 -> Muse.
+"""Dry-run importer for personal-agent-dossier/1.0 (and legacy agent-dossier/0.1, 0.2) -> Muse.
 
 Reads one dossier (file form with front matter, bare YAML, or Notion page
 text holding exactly one ```yaml block), runs all SPEC checks, and prints:
@@ -117,7 +117,7 @@ def stage(data, stage_dir, src_label):
 
     w("dossier-copy.md", dl.render_dossier(data))
     name = data.get("name") or "agent"
-    desc = data.get("title") or f"{name} 的职能档案（由 agent-dossier 导入，待人工补全触发说明）"
+    desc = data.get("title") or f"{name} 的职能档案（由 personal-agent-dossier 导入，待人工补全触发说明）"
     lines = ["---", f"name: {slugify(name)}",
              f"description: {desc}", "---", "",
              f"# {name}", "", "## 职能（role）", "", data.get("role") or "", ""]

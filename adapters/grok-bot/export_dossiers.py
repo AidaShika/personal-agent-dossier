@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export every Grok Bot profile as an agent-dossier/0.2 file (role only).
+"""Export every Grok Bot profile as a personal-agent-dossier/1.0 file (role only).
 routines and memory are written as null = not exported (an empty list means "has none").
 Usage: export_dossiers.py [out_dir]   Read-only on the agent folders; idempotent.
 Exit code: 1 if any agent was BLOCKED (skipped over a sensitive pattern),
@@ -7,7 +7,7 @@ else 0 — a skip must never look like success (SPEC 5.2)."""
 import glob, hashlib, json, os, re, sys, datetime
 
 SRC = '/home/box/agent-data/agents/*/profile.json'
-out = sys.argv[1] if len(sys.argv) > 1 else '/workspace/agent-dossier/out'
+out = sys.argv[1] if len(sys.argv) > 1 else '/workspace/personal-agent-dossier/out'
 os.makedirs(out, exist_ok=True)
 SCAN = [r'[\w.+-]+@(?!\d{1,3}(?:\.\d{1,3}){3}\b)[\w-]+\.[\w.]+', r'0\d{1,3}-\d{3,4}-\d{4}', r'\b\d{16}\b', r'sk-[A-Za-z0-9]{10,}', r'ghp_\w+', r'(?i)(password|passwd|密码)\s*[:：=]\s*\S+']
 
@@ -33,7 +33,7 @@ for p in sorted(glob.glob(SRC)):
     n = lambda x: (x or '').replace('\r\n', '\n').strip()
     fp = hashlib.sha1('|'.join([n(name), n(title), n(role)]).encode('utf-8')).hexdigest()[:12]
     body = '\n'.join([
-        '---', 'spec: agent-dossier/0.2', 'id: ' + aid, 'name: ' + q(name), 'title: ' + q(title),
+        '---', 'spec: personal-agent-dossier/1.0', 'id: ' + aid, 'name: ' + q(name), 'title: ' + q(title),
         'status: active', 'exported_at: ' + datetime.date.today().isoformat(), 'source: grok-bot',
         'fingerprint: ' + fp, 'role: ' + q(role), 'routines: null', 'memory: null',
         'excluded: "routines and memory not exported by this script"', '---', '',

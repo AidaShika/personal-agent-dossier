@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shared library for the Muse adapter of agent-dossier.
+"""Shared library for the Muse adapter of personal-agent-dossier.
 
 Implements:
 - SPEC section 2.1 fingerprint (CRLF -> LF, strip by Unicode White_Space,
@@ -137,7 +137,7 @@ def load_dossier_file(path):
 
 REQUIRED = ["spec", "id", "name", "status", "exported_at", "source",
             "fingerprint", "role", "routines", "memory"]
-SPECS = ("agent-dossier/0.1", "agent-dossier/0.2")
+SPECS = ("personal-agent-dossier/1.0", "agent-dossier/0.1", "agent-dossier/0.2")
 STATUS = {"active", "handed-over", "retired"}
 KIND = {"rule", "preference", "decision", "history"}
 ROUTINE_STATE = {"running", "paused", "deleted"}

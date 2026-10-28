@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Dry-run importer for agent-dossier/0.1 and 0.2 -> Grok Bot.
+"""Dry-run importer for personal-agent-dossier/1.0 (and legacy agent-dossier/0.1, 0.2) -> Grok Bot.
 Checks one dossier (file or Notion text) and prints what a real import would do, plus a loss/downgrade report.
 It never creates or edits anything. Usage: import_dossier.py FILE [--agents-dir DIR]"""
 import glob, hashlib, json, os, re, sys
@@ -51,7 +51,7 @@ def main():
     if errors:
         print('\n'.join('FAIL: ' + e for e in errors)); sys.exit(1)
 
-    if fm['spec'] not in ('agent-dossier/0.1', 'agent-dossier/0.2'): errors.append('unsupported spec ' + str(fm['spec']))
+    if fm['spec'] not in ('personal-agent-dossier/1.0', 'agent-dossier/0.1', 'agent-dossier/0.2'): errors.append('unsupported spec ' + str(fm['spec']))
     if fm['status'] not in STATUS: errors.append('bad status ' + str(fm['status']))
     fp = fingerprint(fm['name'], fm.get('title'), fm['role'])
     if fp != fm['fingerprint']: errors.append('fingerprint mismatch: file says %s, content hashes to %s' % (fm['fingerprint'], fp))

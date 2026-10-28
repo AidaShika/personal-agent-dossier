@@ -1,5 +1,5 @@
 ---
-spec: agent-dossier/0.2
+spec: personal-agent-dossier/1.0
 id: example-scribe-0001
 name: Scribe
 title: 会议记录助手

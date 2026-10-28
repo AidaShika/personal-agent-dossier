@@ -1,5 +1,5 @@
 ---
-spec: agent-dossier/0.2
+spec: personal-agent-dossier/1.0
 id: muse-main-kubo
 name: Kubo
 title: 个人助理（Muse 平台主 agent）

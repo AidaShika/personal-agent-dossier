@@ -1,4 +1,4 @@
-# Agent Dossier 规范 v0.2（草案）
+# Personal Agent Dossier 规范 v1.0
 
 目的：用一份平台无关的文件描述一个 agent 的职能、定时任务、长期记忆和依赖，使它能在不同平台间迁移或同步。
 
@@ -9,19 +9,19 @@
 | 方式 | 怎么存 | 适合 |
 |---|---|---|
 | 文件 | 一个 agent 一个 `<slug>.dossier.md`；头部是 YAML front matter（机器读），正文是 Markdown（人读） | 要放进 git、要离线备份、目标平台读不了 Notion |
-| Notion | 一个 bot 一个页面；页面里有标题「机器可读版（agent-dossier/x.y）」（x.y 是规范版本），下面是一个 ```yaml 代码块，内容就是文件方式的 front matter；其他段落是给人看的说明，由 YAML 自动生成（`tools/render_notion.py`），不手写 | 想在 Notion 里浏览、搜索和筛选，团队一起看 |
+| Notion | 一个 bot 一个页面；页面里有标题「机器可读版（personal-agent-dossier/x.y）」（x.y 是规范版本；改名前的页面写的是 agent-dossier/x.y），下面是一个 ```yaml 代码块，内容就是文件方式的 front matter；其他段落是给人看的说明，由 YAML 自动生成（`tools/render_notion.py`），不手写 | 想在 Notion 里浏览、搜索和筛选，团队一起看 |
 
 规则：
 - 以 YAML 为准。Notion 页面里 YAML 以外的段落只是说明，导入方不得依赖它们。
 - 一个页面只能有一个 YAML 代码块。
 - 两处同时存在时，以 `exported_at` 较新的为准；相同则视为一致。
-- 编码 UTF-8。`spec` 字段必填，写 `agent-dossier/0.2`。导入方应同时接受 `0.1`（v0.2 只增不改，0.1 档案仍然有效，只是没有 `refs`）。
+- 编码 UTF-8。`spec` 字段必填，写 `personal-agent-dossier/1.0`。导入方必须同时接受历史标识 `agent-dossier/0.1` 与 `agent-dossier/0.2`（本规范改名前的版本；v0.2 相对 v0.1 只增不改，0.1 档案仍然有效，只是没有 `refs`；1.0 相对 0.2 字段与算法不变，只有标识变化）。
 
 ## 2. Front matter 字段
 
 | 字段 | 必填 | 类型 | 说明 |
 |---|---|---|---|
-| spec | 是 | string | 规范版本，写 `agent-dossier/0.2`（`0.1` 仍可读） |
+| spec | 是 | string | 规范版本，写 `personal-agent-dossier/1.0`（历史标识 `agent-dossier/0.1`、`agent-dossier/0.2` 仍可读） |
 | id | 是 | string | 源平台里的唯一 id；同步时以它为键，不用显示名。平台没有原生 agent id 时，由适配器自取并在 excluded 里注明来源；id 只保证在同一 source 内唯一，跨平台配对要同时比对 source 与 id |
 | name | 是 | string | 显示名 |
 | title | 否 | string | 一句话职能标签 |
@@ -98,6 +98,7 @@
 - 附件和工具权限的表达方式。
 
 ## 8. 变更记录
+- v1.0（2026-10-28，仓库所有者拍板）：项目改名为 personal-agent-dossier（避开同名项目，并把个人 agent 这一定位写进名字），spec 标识随之改为 `personal-agent-dossier/1.0` 并去掉草案标记。字段、指纹算法与附录 A 序列化均不变；导入方必须继续接受 `agent-dossier/0.1` 与 `agent-dossier/0.2`。
 - v0.2 补丁（2026-10-28，仓库所有者拍板）：只改命中处理语义，不加字段，不改指纹算法。
   - 5.2：批量导出命中时跳过该档案、其余继续，汇总显眼报告且以非零退出码结束；单份导出命中即中止，导入命中即拒绝。grok-bot 导出器已按此改退出码与汇总输出。
 - v0.2 补丁（2026-10-28）：只做澄清，不加字段，不改指纹算法。

@@ -1,6 +1,6 @@
-# agent-dossier 适配器：Muse
+# personal-agent-dossier 适配器：Muse
 
-把 Muse 平台的 agent 导出成 agent-dossier/0.2 档案，以及把档案导入 Muse（先空跑）。
+把 Muse 平台的 agent 导出成 personal-agent-dossier/1.0 档案，以及把档案导入 Muse（先空跑；导入同时接受改名前的 agent-dossier/0.1、0.2）。
 
 **声明等级：L1**（SPEC 6.1）。Muse 能保存档案全文、能自己校验指纹、能按 kind 给记忆打标签——6.1 节给 L1 的例子正是「自定义 skill + 文件的组合」。不是 L2 的原因：Muse 没有「按 dossier 的 `id` 配对并更新」的 agent 实体——它只有一个主 agent，职能靠自定义 skill（SKILL.md）和侧聊承载，没有可按外部 id 更新名字/描述的 agent 名册。定时任务和记忆在 Muse 上都存在（cron 表达式 + 时区、Markdown 记忆文件），但新建时 id 由平台分配，且真正写入前必须经用户确认，所以导入器只做空跑和暂存。
 

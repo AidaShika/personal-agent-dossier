@@ -1,10 +1,10 @@
 ---
-name: agent-dossier
+name: personal-agent-dossier
 description: 当你要把一个 AI agent 的职能、反职责、定时任务和长期记忆导出成平台无关的档案、从档案导入或还原一个 agent、检查两份档案是否漂移，或为你的平台写导出导入适配器时使用。
 ---
-# agent-dossier
+# personal-agent-dossier
 
-agent-dossier 是一份平台无关的「agent 档案」格式（YAML front matter 加 Markdown 正文，也可以存进 Notion 页面）。用它在不同平台之间交接、迁移和同步 agent。你拿到这个仓库，先读本文件，再按下面的表选路线。
+personal-agent-dossier 是一份平台无关的「个人 agent 档案」格式（YAML front matter 加 Markdown 正文，也可以存进 Notion 页面）。用它在不同平台之间交接、迁移和同步 agent。你拿到这个仓库，先读本文件，再按下面的表选路线。
 
 ## 先判断你要做哪件事
 
@@ -14,7 +14,7 @@ agent-dossier 是一份平台无关的「agent 档案」格式（YAML front matt
 | 导入：从档案还原一个 agent | 先用空跑导入器看计划和丢失清单（`adapters/grok-bot/import_dossier.py`，只读）；真正写入前必须得到用户确认 |
 | 检查：两份档案或档案与现状是否漂移 | 按 `SPEC.md` 2.1 节算 `fingerprint`，不同就逐句对比 `role`；相同也要另行逐项比对 `anti_jobs` 与 `routines`（指纹不覆盖它们） |
 | Notion 存储 | 用 `tools/render_notion.py` 由 YAML 生成页面正文，页面里只放一个 yaml 代码块，以 YAML 为准 |
-| 为我的平台写适配器 | 读 `skills/agent-dossier-adapter/SKILL.md`，按它的七步做并写 `adapter-report.md` |
+| 为我的平台写适配器 | 读 `skills/personal-agent-dossier-adapter/SKILL.md`，按它的七步做并写 `adapter-report.md` |
 | 验收一个导入方 | 按 `docs/conformance-test.md` 做一遍 |
 
 ## 仓库里有什么
@@ -26,7 +26,7 @@ agent-dossier 是一份平台无关的「agent 档案」格式（YAML front matt
 | `examples/scribe.dossier.md` | 虚构示例，用来做往返测试 |
 | `tools/render_notion.py` | 档案转 Notion 页面正文 |
 | `adapters/<平台>/` | 各平台的导出器和导入器；每个适配器自己写明等级和已知降级 |
-| `skills/agent-dossier-adapter/SKILL.md` | 写适配器的分步指南和报告模板 |
+| `skills/personal-agent-dossier-adapter/SKILL.md` | 写适配器的分步指南和报告模板 |
 | `docs/conformance-test.md` | 导入方一致性测试 |
 
 ## 任何路线都必须遵守的几条

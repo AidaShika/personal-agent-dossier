@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exporter for agent-dossier/0.2 <- Muse.
+"""Exporter for personal-agent-dossier/1.0 <- Muse.
 
 Two modes:
 
@@ -83,7 +83,7 @@ def from_staging(stage_dir):
     meta = json.load(open(os.path.join(stage_dir, "meta.json"), encoding="utf-8"))
     skill = open(os.path.join(stage_dir, "SKILL.md.draft"), encoding="utf-8").read()
     role, anti = parse_skill_draft(skill)
-    data = {"spec": "agent-dossier/0.2", "source": "muse"}
+    data = {"spec": "personal-agent-dossier/1.0", "source": "muse"}
     for k in ("id", "name", "title", "group", "status", "skills", "refs", "excluded"):
         if meta.get(k) is not None:
             data[k] = meta[k]
@@ -120,7 +120,7 @@ def _orig_meta_nulls(stage_dir):
 
 def from_snapshot(path):
     snap = json.load(open(path, encoding="utf-8"))
-    data = {"spec": "agent-dossier/0.2", "source": "muse"}
+    data = {"spec": "personal-agent-dossier/1.0", "source": "muse"}
     for k in ("id", "name", "title", "group", "status", "role", "anti_jobs",
               "routines", "memory", "refs", "skills", "excluded"):
         if k in snap:
