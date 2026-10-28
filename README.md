@@ -8,7 +8,7 @@
 
 ![Cold-start test: a fresh Hermes seats another platform's agent from one sentence](docs/images/cold-start-hermes.png)
 
-*A fresh Hermes install, given one sentence and no brief, seated another platform's agent on its own, and the round-trip fingerprint came back unchanged. The full story is in the case study below.*
+*A fresh Hermes install, given one sentence and no brief, seated another platform's agent on its own, and the round-trip fingerprint came back unchanged.*
 
 ## Quick start
 
@@ -18,7 +18,7 @@
 git clone https://github.com/AidaShika/personal-agent-dossier
 ```
 
-Hand the clone to your agent as a skill (or have it read `SKILL.md`), then say it in plain words: "Pack up everything about your job into one file. I am moving you to another platform." On the new platform: "This file is your old job. Take it over." That one file is what this project calls a dossier. Nothing is written on trust: an import first runs as a dry run, so you see the plan and the list of anything that would get lost before you approve it. You know it worked when your agent hands back a `.dossier.md` file and tells you its fingerprint, a short code that identifies the contents.
+Hand the clone to your agent as a skill (or have it read `SKILL.md`), then say it in plain words: "Pack up everything about your job into one file. I am moving you to another platform." On the new platform: "This file is your old job. Take it over." That one file is what this project calls a dossier. Nothing is written on trust: an import first runs as a dry run, so you see the plan and the list of anything that would get lost before you approve it. When it works, your agent hands back a `.dossier.md` file and tells you its fingerprint, a short code that identifies the contents.
 
 ### Check a file someone handed you (one minute)
 
@@ -35,14 +35,14 @@ You know it worked when the checker says the fields are in order, the fingerprin
 python3 tests/check_vectors.py   # the fingerprint math has to agree on all 8 test cases
 ```
 
-Then follow the adapter guide in `skills/personal-agent-dossier-adapter/` and run the conformance test in `docs/conformance-test.md`. You know it worked when all test cases pass and a round trip through your importer leaves the fingerprint unchanged.
+Then follow the adapter guide in `skills/personal-agent-dossier-adapter/` and run the conformance test in `docs/conformance-test.md`. You are done when all test cases pass and a round trip through your importer leaves the fingerprint unchanged.
 
 
 ## The problem
 
-New AI agent platforms appear one after another, and people switch between them all the time. Trying a new platform is easy. Moving the agent is not.
+New AI agent platforms appear one after another, and people switch between them all the time. Trying a new platform is easy; moving your agent onto it is the hard part.
 
-A personal agent that has worked for you for months is more than a prompt. It has a role and explicit anti-jobs (things it must *not* do), scheduled routines, long-term memory, dependencies on other agents, and skills it relies on. All of that usually lives inside the old platform. Copy it by hand and things quietly go missing: a routine's schedule survives but its full prompt doesn't, memory arrives as an undifferentiated blob, and nobody can tell what was lost until the agent misbehaves.
+A personal agent that has worked for you for months has picked up a role and explicit anti-jobs (things it must *not* do), scheduled routines, long-term memory, dependencies on other agents, and skills it relies on. All of that usually lives inside the old platform. Copy it by hand and details get lost: a routine's schedule survives but its full prompt doesn't, memory arrives as an undifferentiated blob, and nobody can tell what was lost until the agent misbehaves.
 
 **personal-agent-dossier** packages that hand-over into one portable file: YAML front matter a machine can verify, plus a Markdown body a human can read. The same content can also live in a Notion page. This repository is itself packaged as a skill: an agent that clones it can read `SKILL.md`, pick a route, and export or import an agent by following the instructions.
 
@@ -101,7 +101,7 @@ Writing an adapter for your platform is the intended way to join: follow the gui
 
 ## Case study: from Grok Bot to Muse
 
-This format was not designed in the abstract. It grew out of a working roster of 30+ personal bots on the Grok Bot platform, and its first cross-platform trip was a real hand-over:
+The format grew out of a working roster of 30+ personal bots on the Grok Bot platform, and its first cross-platform trip was a real hand-over:
 
 1. A bot's dossier was exported on the Grok Bot side and imported by Muse, first as a file, then again from a Notion page.
 2. Muse declared L1, verified fingerprints against the standard vectors, round-tripped the example and a real 0.1 dossier, and published an itemized list of what its platform degrades.

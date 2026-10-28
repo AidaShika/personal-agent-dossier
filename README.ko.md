@@ -8,7 +8,7 @@
 
 ![콜드 스타트 테스트: 새로 설치한 Hermes가 한 문장으로 다른 플랫폼의 agent를 맞이하다](docs/images/cold-start-hermes.png)
 
-*새로 설치한 Hermes에 한 문장만 주었더니, 다른 플랫폼의 agent를 스스로 가져왔고 왕복 후에도 지문은 변하지 않았다. 자세한 이야기는 아래 사례에서.*
+*새로 설치한 Hermes에 한 문장만 주었더니, 다른 플랫폼의 agent를 스스로 가져왔고 왕복 후에도 지문은 변하지 않았다.*
 
 ## 빠른 시작
 
@@ -35,14 +35,14 @@ python3 tools/dossier_check.py path/to/any.dossier.md
 python3 tests/check_vectors.py   # 지문 계산은 8개 테스트 케이스 모두에서 일치해야 합니다
 ```
 
-그다음은 `skills/personal-agent-dossier-adapter/`의 어댑터 가이드를 따르고 `docs/conformance-test.md`의 적합성 테스트를 실행합니다. 제대로 되면 테스트 케이스가 모두 통과하고, 내 가져오기로 왕복해도 지문이 변하지 않습니다.
+그다음은 `skills/personal-agent-dossier-adapter/`의 어댑터 가이드를 따르고 `docs/conformance-test.md`의 적합성 테스트를 실행합니다. 합격 기준은 테스트 케이스가 모두 통과하고, 내 가져오기로 왕복해도 지문이 변하지 않는 것입니다.
 
 
 ## 해결하려는 문제
 
 AI 에이전트 플랫폼은 계속해서 새로 나오고, 사람들은 자주 플랫폼을 바꿉니다. 새 플랫폼을 써 보는 것은 쉽습니다. 어려운 것은 에이전트를 옮기는 일입니다.
 
-몇 달 동안 쓴 개인 에이전트는 단순한 프롬프트가 아닙니다. 역할과 명시적인 금지 사항(anti-jobs), 예약된 정기 작업, 장기 기억, 다른 에이전트에 대한 의존성, 사용하는 스킬을 가지고 있습니다. 이런 정보는 대개 예전 플랫폼 안에 갇혀 있습니다. 손으로 복사하면 정기 작업의 시간은 남아도 프롬프트 전문이 사라지거나, 기억이 종류 구분 없는 덩어리로 도착하는 식의 누락이 생기고, 무엇이 사라졌는지는 에이전트가 이상하게 동작하기 전까지 알 수 없습니다.
+몇 달 동안 쓴 개인 에이전트는 역할과 명시적인 금지 사항(anti-jobs), 예약된 정기 작업, 장기 기억, 다른 에이전트에 대한 의존성, 사용하는 스킬을 가지고 있습니다. 이런 정보는 대개 예전 플랫폼 안에 갇혀 있습니다. 손으로 복사하면 정기 작업의 시간은 남아도 프롬프트 전문이 사라지거나, 기억이 종류 구분 없는 덩어리로 도착하는 식의 누락이 생기고, 무엇이 사라졌는지는 에이전트가 이상하게 동작하기 전까지 알 수 없습니다.
 
 **personal-agent-dossier**는 이 인계를 하나의 이식 가능한 파일로 묶습니다. 기계가 검증할 수 있는 YAML front matter와 사람이 읽을 수 있는 Markdown 본문의 조합이며, 같은 내용을 Notion 페이지에 저장할 수도 있습니다. 이 저장소 자체가 하나의 스킬로 패키징되어 있어서, 에이전트가 클론한 뒤 `SKILL.md`를 읽고 절차를 따르면 내보내기와 가져오기를 수행할 수 있습니다.
 
@@ -94,14 +94,14 @@ AI 에이전트 플랫폼은 계속해서 새로 나오고, 사람들은 자주 
 |---|---|---|---|
 | Grok Bot | L2 | 일괄 내보내기, 가져오기(사전 실행) | 이 형식이 태어난 플랫폼. 에이전트 id로 동기화합니다 |
 | Muse | L1 | 내보내기, 가져오기(사전 실행), 자기 내보내기 예시 | 보고서: [`adapters/muse/adapter-report.md`](adapters/muse/adapter-report.md) |
-| Hermes | L2 (범위: 아카이브 1건 = Hermes home 1개) | 내보내기, 가져오기(사전 실행 + 적용) | Hermes Agent 본인이 어댑터 가이드에 따라 작성. 실제 Grok Bot 아카이브로 왕복 검증 완료(지문 불변). 보고서: [`adapters/hermes/adapter-report.md`](adapters/hermes/adapter-report.md) |
-| OpenClaw | L2 (범위: 아카이브 1건 = OpenClaw 에이전트 1개) | 내보내기, 가져오기(사전 실행 + 적용) | OpenClaw 본인이 어댑터 가이드에 따라 작성. 실제 Grok Bot 아카이브로 왕복 검증 완료(지문 불변). 현재 cron 저장소가 구 JSON 파일이 아닌 SQLite라는 것도 본인이 발견. 보고서: [`adapters/openclaw/adapter-report.md`](adapters/openclaw/adapter-report.md) |
+| Hermes | L2 (범위: 도시에 1건 = Hermes home 1개) | 내보내기, 가져오기(사전 실행 + 적용) | Hermes Agent 본인이 어댑터 가이드에 따라 작성. 실제 Grok Bot 아카이브로 왕복 검증 완료(지문 불변). 보고서: [`adapters/hermes/adapter-report.md`](adapters/hermes/adapter-report.md) |
+| OpenClaw | L2 (범위: 도시에 1건 = OpenClaw 에이전트 1개) | 내보내기, 가져오기(사전 실행 + 적용) | OpenClaw 본인이 어댑터 가이드에 따라 작성. 실제 Grok Bot 아카이브로 왕복 검증 완료(지문 불변). 현재 cron 저장소가 구 JSON 파일이 아닌 SQLite라는 것도 본인이 발견. 보고서: [`adapters/openclaw/adapter-report.md`](adapters/openclaw/adapter-report.md) |
 
 새 플랫폼용 어댑터를 작성하는 것이 의도된 참여 방식입니다. `skills/personal-agent-dossier-adapter/`의 가이드를 따라 만들고, 지문 벡터와 적합성 테스트를 통과한 뒤, 어댑터 보고서와 함께 이 표에 추가하는 PR을 보내 주세요.
 
 ## 실제 사례: Grok Bot에서 Claude로
 
-이 형식은 책상 위에서 설계된 것이 아닙니다. Grok Bot에서 실제로 운영 중인 30개 이상의 개인 봇 명부에서 나왔고, 첫 번째 플랫폼 간 인계도 실제 이전이었습니다.
+이 형식은 Grok Bot에서 실제로 운영 중인 30개 이상의 개인 봇 명부에서 나왔고, 첫 번째 플랫폼 간 인계도 실제 이전이었습니다.
 
 1. 한 봇의 도시에를 Grok Bot 쪽에서 내보내고 Claude가 가져왔습니다. 먼저 파일 형식으로, 그다음에는 Notion 페이지에서도 가져왔습니다.
 2. Claude는 L1을 선언하고 표준 벡터로 지문을 검증했으며, 예시 도시에와 실제 0.1 도시에로 왕복 테스트를 하고, 자기 플랫폼에서 받을 수 없는 항목을 목록으로 만들었습니다.
