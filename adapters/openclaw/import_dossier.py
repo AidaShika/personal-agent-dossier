@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Import a personal-agent-dossier into an OpenClaw home.
+"""Import a personal-agent-dossier into one OpenClaw agent.
 
 Default is a dry run: validate, scan, and print the plan plus the loss list.
 `--apply --target-home DIR` writes, and only inside DIR:
@@ -8,14 +8,16 @@ Default is a dry run: validate, scan, and print the plan plus the loss list.
   <workspace>/AGENTS.md          anti_jobs as a managed block (rest untouched)
   <workspace>/IDENTITY.md        the Name bullet
   <workspace>/MEMORY.md          memory facts as a managed block (rest kept)
-  <home>/cron/jobs.json          routines as OpenClaw cron jobs (agentId set)
+  <home>/state/openclaw.sqlite   routines as rows in cron_jobs (agentId set)
+                                 or <home>/cron/jobs.json when the DB is absent
   <home>/dossier/<agentId>/      archived original + import-meta.json (pairing)
 
 One dossier pairs with one OpenClaw agent (by agentId). A home may hold
-several agents; each keeps its own workspace and its own slice of jobs.json.
+several agents; each keeps its own workspace and its own slice of cron jobs.
+
 Refusals (exit 1): the agent already carries a different dossier; SOUL.md is
 neither the onboard seed nor ours (use --replace-soul to override, the old
-file is kept as SOUL.md.pre-dossier). Validation/scan failures exit 2.
+file is kept as a backup). Validation/scan failures exit 2.
 """
 
 import argparse
@@ -29,14 +31,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import dossier_lib as L
 
 
-def load_config(home):
-    p = home / L.CONFIG_FILE
-    if p.exists():
-        try:
-            return json.loads(p.read_text(encoding="utf-8"))
-        except Exception as e:
-            print(f"warning: openclaw.json unreadable ({e}); assuming default layout")
-    return {"agents": {"defaults": {"workspace": str(home / L.WORKSPACE_DIR)}}}
+def _backup_path(path):
+    """A free SOUL.md.pre-dossier[.N] path."""
+    cand = path.with_name(path.name + ".pre-dossier")
+    n = 1
+    while cand.exists():
+        cand = path.with_name(f"{path.name}.pre-dossier.{n}")
+        n += 1
+    return cand
 
 
 def main():
@@ -47,7 +49,8 @@ def main():
                     help="OpenClaw agentId to import as (default: main)")
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--replace-soul", action="store_true",
-                    help="overwrite a foreign SOUL.md (backup kept)")
+                    help="overwrite a foreign SOUL.md (a backup is kept)")
+    ap.add_argument("--date", help="import date for meta (YYYY-MM-DD)")
     args = ap.parse_args()
 
     try:
@@ -62,21 +65,30 @@ def main():
         for e in errors:
             print(f"error: {e}")
         return 2
-    original_text = Path(args.dossier).read_text(encoding="utf-8")
-    agent = args.agent_id
 
+    original_text = Path(args.dossier).read_text(encoding="utf-8")
+    agent = str(args.agent_id).strip() or L.DEFAULT_AGENT_ID
     home = Path(args.target_home).expanduser() if args.target_home else None
     if args.apply and home is None:
         print("error: --apply requires --target-home")
         return 2
-    cfg = load_config(home) if home else None
-    workspace = (L.resolve_workspace(cfg, home, agent) or (home / L.WORKSPACE_DIR)) if home else None
+
+    cfg = L.load_config(home) if home else {}
+    workspace = L.resolve_workspace(cfg, home, agent) if home else None
+    if home and workspace is None:
+        print(f"error: agent {agent!r} is not configured in {home / L.CONFIG_FILE}; "
+              "add it first (for example: openclaw agents add " + agent + ")")
+        return 1
 
     meta_dir = (home / L.ARCHIVE_ROOT / agent) if home else None
     meta_path = meta_dir / "import-meta.json" if meta_dir else None
-    meta = None
+    meta = {}
     if meta_path and meta_path.exists():
-        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        try:
+            meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        except Exception:
+            print(f"error: unreadable import meta {meta_path}; refusing to guess")
+            return 1
         if (meta.get("source"), meta.get("id")) != (data.get("source"), data.get("id")):
             print(f"error: agent {agent!r} in this home already carries dossier "
                   f"{meta.get('source')}/{meta.get('id')}; refusing a second identity")
@@ -84,8 +96,10 @@ def main():
 
     soul_path = workspace / L.SOUL_FILE if workspace else None
     soul_state = "no target"
+    soul_text = ""
     if soul_path and soul_path.exists():
-        _r, mid, msrc, is_seed = L.parse_soul(soul_path.read_text(encoding="utf-8"))
+        soul_text = soul_path.read_text(encoding="utf-8")
+        _r, mid, msrc, is_seed = L.parse_soul(soul_text)
         if mid is not None:
             soul_state = "ours" if (mid, msrc) == (data.get("id"), data.get("source")) else "other-dossier"
         elif is_seed:
@@ -109,22 +123,57 @@ def main():
     if data.get("refs"):
         losses.append("refs: archive only; ids do not resolve across platforms, "
                       "re-link by name by hand")
-    routines = data.get("routines") or []
+    losses.append("status: documentary; kept in import-meta.json only")
+
+    routines = data.get("routines")
+    routines_exported = routines is not None
+    routines = routines or []
+    memory = data.get("memory")
+    memory_exported = memory is not None
+    memory = memory or []
+
+    try:
+        existing_jobs, backend = (L.load_cron_jobs(home, cfg) if home else ([], "none"))
+    except L.DossierError as e:
+        print(f"error: {e}")
+        return 2
+    default = L.default_agent_id(cfg)
+    existing_jobs = [j for j in existing_jobs
+                     if j.get("agentId") == agent
+                     or (j.get("agentId") in (None, "") and agent == default)]
+    existing_by_id = {j.get("id"): j for j in existing_jobs}
+    prior_ids = (meta.get("routine_ids") or {}) if isinstance(meta, dict) else {}
+
     now_ms = int(time.time() * 1000)
-    job_plan = []
+    job_plan = []          # (routine, job, note)
+    delete_ids = []
+    new_routine_ids = {}
     for r in routines:
+        rname = r.get("name") or ""
         if (r.get("state") or "running") == "deleted":
-            job_plan.append((r, None, "state deleted: not created (existing job removed)"))
+            jid = prior_ids.get(rname) or L.job_id_for(data.get("id"), rname)
+            delete_ids.append(jid)
+            job_plan.append((r, None, "state deleted: existing job removed, none created"))
             continue
-        job, note = L.build_job(data.get("id"), agent, r, now_ms)
+        existing = existing_by_id.get(L.job_id_for(data.get("id"), rname)) or \
+            next((j for j in existing_jobs if j.get("agentId") == agent
+                  and j.get("name") == rname), None)
+        job, note = L.build_job(data.get("id"), agent, r, now_ms, existing=existing)
         if job is None:
-            losses.append(f"routine {r.get('name')!r}: {note}")
+            losses.append(f"routine {rname!r}: {note}")
         else:
             if note:
-                losses.append(f"routine {r.get('name')!r}: {note}")
+                losses.append(f"routine {rname!r}: {note}")
             job_plan.append((r, job, ""))
+            new_routine_ids[rname] = job["id"]
+    # A routine removed from a re-imported dossier is removed from this agent.
+    if routines_exported:
+        for rname, jid in prior_ids.items():
+            if rname not in new_routine_ids and jid not in delete_ids:
+                delete_ids.append(jid)
     losses.append("routine ids: remapped to deterministic uuid5 ids "
                   "(stable across re-imports of the same dossier)")
+
     skills = data.get("skills") or []
     missing_skills = []
     if workspace:
@@ -135,16 +184,29 @@ def main():
         losses.append("skills: names only; nothing is created. "
                       + (f"missing in target workspace: {', '.join(missing_skills)}"
                          if missing_skills else "all present in target workspace"))
-    mem = data.get("memory") or []
-    anti = data.get("anti_jobs") or []
+    if not routines_exported:
+        losses.append("routines: null = not exported, not 'none'; no cron change is made")
+    if not memory_exported:
+        losses.append("memory: null = not exported, not 'none'; MEMORY.md is not touched")
+    for r in routines:
+        if r.get("state") == "deleted":
+            losses.append(f"routine {r.get('name')!r}: state deleted is kept in the "
+                          "archive but the job is not recreated")
+    losses.append("routine delivery: dossier has no field; imported jobs use mode=none")
 
     print(f"dossier: {data.get('source')}/{data.get('id')}  fingerprint {data.get('fingerprint')}")
-    print(f"agent:   {agent}" + (f"  workspace: {workspace}" if workspace else "  (no target home)"))
-    print(f"plan:")
+    if home:
+        print(f"agent:   {agent}  workspace: {workspace}")
+        print(f"cron:    {L.cron_backend_label(home, cfg)}")
+    else:
+        print(f"agent:   {agent}  (no target home)")
+    print("plan:")
     print(f"  role      -> SOUL.md ({soul_state})")
-    print(f"  anti_jobs -> AGENTS.md managed block ({len(anti)} items)")
+    print(f"  anti_jobs -> AGENTS.md managed block ({len(data.get('anti_jobs') or [])} items)")
     print(f"  name      -> IDENTITY.md Name bullet: {data.get('name')!r}")
-    print(f"  memory    -> MEMORY.md managed block ({len(mem)} entries)")
+    print(f"  memory    -> MEMORY.md managed block ({len(memory)} entries"
+          + ("" if memory_exported else "; not exported") + ")")
+    jobs = [job for _r, job, _n in job_plan if job is not None]
     for r, job, note in job_plan:
         if job:
             sch = job["schedule"]
@@ -152,7 +214,9 @@ def main():
                   + (f" ({sch['tz']})" if sch.get("tz") else "")
                   + f", enabled={job['enabled']}, id {job['id'][:8]}…")
         else:
-            print(f"  routine   -> skipped {r.get('name')!r}: {note}")
+            print(f"  routine   -> {note}: {r.get('name')!r}")
+    if delete_ids:
+        print(f"  routines  -> remove {len(delete_ids)} previously imported job(s)")
     print(f"  archive   -> dossier/{agent}/ (original + import-meta.json)")
     if losses:
         print("losses / downgrades:")
@@ -165,18 +229,20 @@ def main():
     # ---- apply ------------------------------------------------------------
     workspace.mkdir(parents=True, exist_ok=True)
     written = []
-    if soul_state == "foreign" and args.replace_soul:
-        (workspace / (L.SOUL_FILE + ".pre-dossier")).write_text(
-            soul_path.read_text(encoding="utf-8"), encoding="utf-8")
-        written.append("SOUL.md.pre-dossier (backup)")
+    if soul_state == "foreign":
+        backup = _backup_path(soul_path)
+        backup.write_text(soul_text, encoding="utf-8")
+        written.append(f"{backup.name} (backup)")
     soul_path.write_text(L.render_soul(data.get("role"), data.get("id"), data.get("source")),
                          encoding="utf-8")
     written.append("SOUL.md")
 
     agents_path = workspace / L.AGENTS_FILE
     agents_text = agents_path.read_text(encoding="utf-8") if agents_path.exists() else ""
-    agents_path.write_text(L.upsert_agents_block(agents_text, anti), encoding="utf-8")
-    written.append("AGENTS.md (anti_jobs block)")
+    if data.get("anti_jobs") is not None:
+        agents_path.write_text(L.upsert_agents_block(agents_text, data.get("anti_jobs")),
+                               encoding="utf-8")
+        written.append("AGENTS.md (anti_jobs block)")
 
     ident_path = workspace / L.IDENTITY_FILE
     if ident_path.exists():
@@ -187,52 +253,41 @@ def main():
                               encoding="utf-8")
     written.append("IDENTITY.md")
 
-    mem_path = workspace / L.MEMORY_FILE
-    mem_text = mem_path.read_text(encoding="utf-8") if mem_path.exists() else ""
-    mem_path.write_text(L.upsert_memory_block(mem_text, mem), encoding="utf-8")
-    written.append("MEMORY.md (memory block)")
+    if memory_exported:
+        mem_path = workspace / L.MEMORY_FILE
+        mem_text = mem_path.read_text(encoding="utf-8") if mem_path.exists() else ""
+        mem_path.write_text(L.upsert_memory_block(mem_text, memory), encoding="utf-8")
+        written.append("MEMORY.md (memory block)")
 
-    cron_path = home / L.CRON_FILE
-    store = {"version": 1, "jobs": []}
-    if cron_path.exists():
+    if routines_exported:
         try:
-            store = json.loads(cron_path.read_text(encoding="utf-8"))
-        except Exception:
-            print("error: existing cron/jobs.json is not valid JSON; not touching it")
-            return 1
-        store.setdefault("version", 1)
-        store.setdefault("jobs", [])
-    jobs = store["jobs"]
-    routine_ids = {}
-    for r, job, _note in job_plan:
-        if (r.get("state") or "running") == "deleted":
-            jid = L.job_id_for(data.get("id"), r.get("name") or "")
-            jobs[:] = [j for j in jobs if j.get("id") != jid]
-            continue
-        if job is None:
-            continue
-        existing = next((j for j in jobs if j.get("id") == job["id"]), None) or \
-            next((j for j in jobs if j.get("agentId") == agent and j.get("name") == job["name"]), None)
-        if existing is not None:
-            job, _ = L.build_job(data.get("id"), agent, r, now_ms, existing=existing)
-            jobs[jobs.index(existing)] = job
-        else:
-            jobs.append(job)
-        routine_ids[r.get("name") or ""] = job["id"]
-    cron_path.parent.mkdir(parents=True, exist_ok=True)
-    cron_path.write_text(json.dumps(store, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    written.append("cron/jobs.json")
+            backend, nw, nd = L.save_cron_jobs(home, cfg, jobs, delete_ids=delete_ids,
+                                               now_ms=now_ms)
+        except L.DossierError as e:
+            print(f"error: {e}")
+            return 2
+        written.append(f"{backend} cron ({nw} upserted, {nd} removed)")
 
+    # Archive the exact source bytes, then the pairing map. Remove an older
+    # archive file for this agent so export never reads a stale name variant.
     meta_dir.mkdir(parents=True, exist_ok=True)
     slug = L.slugify(data.get("name") or "agent")
-    (meta_dir / f"{slug}.dossier.md").write_text(original_text, encoding="utf-8")
+    archive_path = meta_dir / f"{slug}.dossier.md"
+    archive_path.write_text(original_text, encoding="utf-8")
+    for old in meta_dir.glob("*.dossier.md"):
+        if old != archive_path:
+            old.unlink()
     meta_out = {
         "spec": data.get("spec"), "id": data.get("id"), "source": data.get("source"),
         "name": data.get("name"), "title": data.get("title"),
         "fingerprint": data.get("fingerprint"), "agent_id": agent,
         "workspace": str(workspace),
-        "imported_at": datetime.date.today().isoformat(),
-        "routines": routine_ids, "files": written,
+        "imported_at": args.date or datetime.date.today().isoformat(),
+        "routines_exported": routines_exported,
+        "memory_exported": memory_exported,
+        "routines": new_routine_ids,
+        "cron_backend": backend if routines_exported else None,
+        "files": written,
     }
     (meta_dir / "import-meta.json").write_text(
         json.dumps(meta_out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -240,6 +295,9 @@ def main():
     print("\napplied:")
     for w_ in written:
         print(f"  - {w_}")
+    if routines_exported and (jobs or delete_ids):
+        print("note: a running gateway reloads cron on restart; the imported jobs are "
+              "visible to `openclaw cron list` after the gateway starts.")
     return 0
 
 
