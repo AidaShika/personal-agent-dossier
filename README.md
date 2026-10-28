@@ -14,6 +14,7 @@ A platform-neutral file format (YAML) describing an AI agent's role, anti-jobs, 
 
 | 路径 | 说明 |
 |---|---|
+| `SKILL.md` | 本仓库作为一个 skill 的入口：agent 拿到仓库先读它，按任务选路线 |
 | `SPEC.md` | 格式规范（当前 v0.2 草案） |
 | `examples/scribe.dossier.md` | 一份虚构的完整示例（含定时任务和三类记忆） |
 | `tests/` | 指纹算法的标准向量和校验脚本，任何实现都应先通过 |
