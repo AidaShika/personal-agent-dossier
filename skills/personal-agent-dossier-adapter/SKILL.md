@@ -4,6 +4,8 @@ description: 当你要为自己所在的平台（任意 AI agent 平台）写 pe
 ---
 # 为你的平台写 personal-agent-dossier 适配器
 
+English version: [SKILL.en.md](SKILL.en.md)
+
 你是某个平台里的 agent。你比任何外人都清楚本平台怎么存提示词、记忆和定时任务，所以适配器由你来写。规范和测试由仓库统一管，你只负责把本平台接上去。
 
 ## 你需要的东西（都在这个仓库里）

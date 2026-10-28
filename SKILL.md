@@ -4,6 +4,8 @@ description: 当你要把一个 AI agent 的职能、反职责、定时任务和
 ---
 # personal-agent-dossier
 
+English version: [SKILL.en.md](SKILL.en.md)
+
 personal-agent-dossier 是一份平台无关的「个人 agent 档案」格式（YAML front matter 加 Markdown 正文，也可以存进 Notion 页面）。用它在不同平台之间交接、迁移和同步 agent。你拿到这个仓库，先读本文件，再按下面的表选路线。
 
 ## 用户会怎么说
