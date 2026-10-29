@@ -1,6 +1,6 @@
 # personal-agent-dossier
 
-[![CI](https://github.com/AidaShika/personal-agent-dossier/actions/workflows/ci.yml/badge.svg)](https://github.com/AidaShika/personal-agent-dossier/actions/workflows/ci.yml)
+[![CI](https://github.com/AidaShika/personal-agent-dossier/actions/workflows/ci.yml/badge.svg)](https://github.com/AidaShika/personal-agent-dossier/actions/workflows/ci.yml) [![version](https://img.shields.io/github/v/release/AidaShika/personal-agent-dossier?label=version)](https://github.com/AidaShika/personal-agent-dossier/releases) [![license](https://img.shields.io/github/license/AidaShika/personal-agent-dossier)](https://github.com/AidaShika/personal-agent-dossier/blob/main/LICENSE) ![lang](https://img.shields.io/badge/lang-EN%20%C2%B7%20%E4%B8%AD%E6%96%87%20%C2%B7%20%E6%97%A5%E6%9C%AC%E8%AA%9E%20%C2%B7%20%ED%95%9C%EA%B5%AD%EC%96%B4-red) [![stars](https://img.shields.io/github/stars/AidaShika/personal-agent-dossier?style=social)](https://github.com/AidaShika/personal-agent-dossier/stargazers)
 
 [English](README.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | **한국어**
 
